@@ -42,9 +42,11 @@ run_one() {
 build bench-c Dockerfile.c
 build bench-cpp Dockerfile.cpp
 build bench-rust Dockerfile.rust
+build bench-asm Dockerfile.asm
 
 echo
 printf "%-10s %-10s %-10s %-10s %-12s %-20s\n" "lang" "min_ms" "median_ms" "mean_ms" "checksum" "asm"
 run_one bench-c
 run_one bench-cpp
 run_one bench-rust
+run_one bench-asm

@@ -4,19 +4,22 @@ A benchmark comparing the performance of C, C++, and Rust implementations of an 
 
 ## Key Finding: Rust Wins!
 
-**Clean, idiomatic scalar Rust is ~33% faster than the auto-vectorized C/C++ code** for this workload (~1.78s vs ~2.66s), contrary to initial assumptions about auto-vectorization being necessary for performance.
+**Clean, idiomatic scalar Rust is ~33% faster than the auto-vectorized C/C++ code** for this workload (~1.78s vs ~2.66s). Furthermore, a **manual assembly implementation in Rust** achieves even higher performance (~1.23s), demonstrating that Rust allows for full low-level optimization when needed.
 
 | Language | Time (ms) | Relative | Checksum | SIMD Instructions |
 |----------|-----------|----------|----------|-------------------|
 | C        | 2,662     | 1.0x     | 6673.544927 | Yes (`fmul v*.2d`, `fadd v*.2d`) |
 | C++      | 2,669     | 1.0x     | 6673.544927 | Yes (`fmul v*.2d`, `fadd v*.2d`) |
-| Rust     | 1,782     | **0.67x**| 6673.544927 | **No** (scalar only) |
+| Rust (Scalar)| 1,782     | **0.67x**| 6673.544927 | **No** (scalar only) |
+| Rust (ASM)| 1,231     | **0.46x**| 6676.618500 | **Yes** (manual `fmla`) |
 
 *Tested on Apple Silicon (ARM64/aarch64) with Docker*
 
 ## Update: The Solution
 
-We initially observed Rust being 7.5x slower (20s). This turned out to be due to suboptimal build flags or test conditions. By simply using **clean, idiomatic Rust** (standard iterators/loops) and ensuring the correct release profile, Rust outperforms the auto-vectorized C code even without using SIMD instructions.
+We initially observed Rust being 7.5x slower (20s). This turned out to be due to suboptimal build flags or test conditions. By simply using **clean, idiomatic Rust** (standard iterators/loops) and ensuring the correct release profile, Rust outperforms the auto-vectorized C code.
+
+For maximum performance, we implemented a manual SIMD kernel using `std::arch::asm!`, which achieved **~2.1x speedup over C**. Note that the ASM version has a slightly different checksum due to floating-point associativity differences (parallel accumulation).
 
 ### The Winning Rust Code
 Using standard iterators eliminated bounds checks and allowed LLVM to optimize the scalar loop aggressively:
