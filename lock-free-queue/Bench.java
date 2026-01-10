@@ -1,14 +1,25 @@
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicLongArray;
 
-class LockFreeQueue {
+// Padding to prevent false sharing
+abstract class PaddedEnqueuePos {
+    protected long p1, p2, p3, p4, p5, p6, p7;
+    protected final AtomicLong enqueuePos = new AtomicLong(0);
+    protected long p8, p9, p10, p11, p12, p13, p14;
+}
+
+abstract class PaddedDequeuePos extends PaddedEnqueuePos {
+    protected long p15, p16, p17, p18, p19, p20, p21;
+    protected final AtomicLong dequeuePos = new AtomicLong(0);
+    protected long p22, p23, p24, p25, p26, p27, p28;
+}
+
+class LockFreeQueue extends PaddedDequeuePos {
     private static final int QUEUE_SIZE = 65536;
     private static final int QUEUE_MASK = QUEUE_SIZE - 1;
 
     private final AtomicLongArray sequence = new AtomicLongArray(QUEUE_SIZE);
     private final long[] data = new long[QUEUE_SIZE];
-    private final AtomicLong enqueuePos = new AtomicLong(0);
-    private final AtomicLong dequeuePos = new AtomicLong(0);
 
     public LockFreeQueue() {
         for (int i = 0; i < QUEUE_SIZE; i++) {
