@@ -119,6 +119,44 @@ Benchmarks were executed on Docker/Ubuntu 22.04 (Apple Silicon host).
 
 ---
 
+## ZIG & FORTRAN INTEGRATION AUDIT
+
+**Date Added:** 2026-01-10
+**Zig Version:** 0.13.0
+**Fortran Compiler:** gfortran (GCC 11+)
+
+### Zig Fairness Analysis
+
+#### 1. Optimization Flags (`ReleaseFast`)
+**Finding:** Zig benchmarks are built with `-O ReleaseFast`.
+**Fairness Check:** While `ReleaseFast` allows for "fast-math" optimizations in some contexts, manual inspection of the Zig source code confirms that no explicit `@setFloatMode(.Optimized)` is used in critical calculation paths. The implementations rely on standard floating-point behavior.
+**Recommendation:** We accept `ReleaseFast` as the idiomatic high-performance build profile for Zig, effectively comparable to `-O3` in C/C++. The bit-perfect checksum matches in N-Body confirm that aggressive reordering (which would break the checksum) is not happening.
+
+#### 2. SHA-256 "Clean Room" Verification
+**Finding:** The Zig implementation in `sha256-cryptography/bench.zig` is a **manual implementation** of the algorithm.
+**Fairness Check:** It does **not** call `std.crypto.hash.sha2.Sha256`. It defines its own `Sha256Ctx` struct and manual bitwise rotation helper functions (`rotr`, `ch`, `maj`, etc.), exactly matching the methodology of the C/C++ benchmarks. This is a fair test of Zig's language performance.
+
+#### 3. Memory Layout Consistency
+**Finding:**
+- **N-Body:** Zig uses a "Structure of Arrays" (SoA) layout (separate arrays for `x`, `y`, `z`, etc.), matching the C/C++ implementation.
+- **3D Vertex:** Zig uses an "Array of Structures" (AoS) layout (`struct { x, y, z }`), matching the C/C++ implementation.
+**Conclusion:** Memory access patterns are consistent with the baseline.
+
+### Fortran Fairness Analysis
+
+#### 1. Parallelism Strategy
+**Finding:** In `mandelbrot/bench.f90`, OpenMP directives explicitly use `schedule(dynamic, 1)`.
+**Fairness Check:** This strictly matches the C/C++ scheduling strategy, preventing load-balancing discrepancies from skewing the results.
+
+#### 2. Out-of-Scope Benchmarks
+**Finding:** Fortran implementations are missing for **Lock-Free Queue** and **Kernel Pipe**.
+**Decision:** These are marked as **Out of Scope**. Fortran is designed for high-performance numerical computing. Forcing it to perform low-level atomic pointer manipulation or OS syscall-heavy IPC would produce non-idiomatic code that does not reflect the language's intended use case. This is not a failure of the audit.
+
+#### 3. Memory Layout
+**Finding:** Fortran naturally uses column-major arrays, but the N-Body implementation uses separate 1D arrays (`allocatable :: x(:), y(:)`), effectively mirroring the SoA layout of C/C++.
+
+---
+
 ## LANGUAGE SUMMARY
 
 | Language | Strengths | Weaknesses |
