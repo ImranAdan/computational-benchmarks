@@ -48,12 +48,14 @@ build bench-rust Dockerfile.rust
 build bench-asm Dockerfile.asm
 build bench-java Dockerfile.java
 build bench-zig Dockerfile.zig
+build bench-fortran Dockerfile.fortran
 
 echo
-printf "%-10s %-10s %-10s %-10s %-12s %-20s\n" "lang" "min_ms" "median_ms" "mean_ms" "checksum" "asm"
+printf "%-12s %-10s %-10s %-10s %-12s %-20s\n" "lang" "min_ms" "median_ms" "mean_ms" "checksum" "asm"
 run_one bench-c
 run_one bench-cpp
 run_one bench-rust
 run_one bench-asm
 run_one bench-java
 run_one bench-zig
+run_one bench-fortran

@@ -1,0 +1,6 @@
+FROM ubuntu:22.04
+RUN apt-get update && apt-get install -y gfortran binutils && rm -rf /var/lib/apt/lists/*
+WORKDIR /bench
+COPY bench.f90 .
+RUN gfortran -O3 -march=native -flto -fno-fast-math -fno-finite-math-only -fwrapv bench.f90 -o bench
+CMD ["./bench"]
