@@ -19,7 +19,8 @@ A high-volume linear algebra benchmark projecting a rotating 250,000-vertex mesh
 *   **Key Finding:** Rust is **~4.4x faster** than C/C++ (425M vs 95M vertices/sec).
 *   **Story:** Showcases Rust's ability to trigger aggressive auto-vectorization and inlining for mathematical kernels.
 
-### 4. [3D Live Polyglot Visualizer](./3d-live-visualizer/)
+### 4. [3D Live Polyglot Visualizer (WIP)](./3d-live-visualizer/)
+**Status: Work In Progress**
 A real-time WebGL visualization where the mathematical engine can be swapped between C, C++, and Rust on the fly.
 *   **Key Finding:** Demonstrates real-time polyglot interoperability (FFI) and streaming throughput.
 *   **Interactive:** Use the dashboard to watch "Math Latency" averages change as you switch languages.
