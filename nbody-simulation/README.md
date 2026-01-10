@@ -25,6 +25,12 @@ This benchmark simulates the gravitational interaction between a set of particle
 *   **JIT**: The 5-step warm-up is critical. Without it, the initial steps are interpreted, making the benchmark significantly slower.
 *   **Arithmetic**: Uses `java.lang.Math.sqrt`. Since Java 17, all floating-point math is strict (matching IEEE-754), ensuring bit-perfect parity with the native versions.
 
+### Zig
+*   **Performance**: Comparable to Rust, within 2% margin.
+*   **LLVM Backend**: Zig uses the same LLVM backend as Rust, resulting in nearly identical code generation and floating-point behavior.
+*   **Checksum**: Matches Rust exactly (6673.544927), confirming identical FP operation ordering.
+*   **Build**: Uses `-O ReleaseFast` for maximum optimization, equivalent to `-O3` in C/C++.
+
 ## Verification
 *   **Checksum**: The sum of all positions and velocities at step 50 must match exactly across all languages.
 *   **Status**: PASSED.

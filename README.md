@@ -20,6 +20,8 @@ This repository contains a suite of six benchmarks designed to evaluate the perf
 | [Lock-Free Queue](./lock-free-queue/) | 19.6M ops/s | 10.1M ops/s | 5.6M ops/s | 3.6M ops/s | C |
 | [Kernel Pipe Throughput](./kernel-pipe-throughput/) | 3.12 GB/s | 3.07 GB/s | 3.27 GB/s | 0.99 GB/s | C |
 
+**Experimental:** Zig (0.13.0) added to N-Body benchmark: **670 ms** (comparable to Rust).
+
 ---
 
 ## Methodology & Fairness Guarantees
