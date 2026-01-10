@@ -16,7 +16,10 @@ run_one() {
   local asm_dir="$ROOT_DIR/asm"
   mkdir -p "$asm_dir"
   local asm_file="$asm_dir/${name}.asm"
-  docker run --rm "$name" objdump -d /bench/bench >"$asm_file"
+  # Only try to extract ASM for non-python/non-java runs
+  if [[ "$name" != *python* && "$name" != *java* ]]; then
+    docker run --rm "$name" objdump -d /bench/bench >"$asm_file" 2>/dev/null || true
+  fi
   local times=()
   local checksums=()
   local out elapsed checksum
@@ -43,6 +46,7 @@ build bench-c Dockerfile.c
 build bench-cpp Dockerfile.cpp
 build bench-rust Dockerfile.rust
 build bench-asm Dockerfile.asm
+build bench-java Dockerfile.java
 
 echo
 printf "%-10s %-10s %-10s %-10s %-12s %-20s\n" "lang" "min_ms" "median_ms" "mean_ms" "checksum" "asm"
@@ -50,3 +54,4 @@ run_one bench-c
 run_one bench-cpp
 run_one bench-rust
 run_one bench-asm
+run_one bench-java

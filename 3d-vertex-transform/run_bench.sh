@@ -15,7 +15,9 @@ run_one() {
   local runs="${RUNS:-3}"
   
   # Extract ASM
-  docker run --rm "$name" objdump -d /bench/bench > "$ROOT_DIR/asm/${name}.asm"
+  if [[ "$name" != *python* && "$name" != *java* ]]; then
+    docker run --rm "$name" objdump -d /bench/bench > "$ROOT_DIR/asm/${name}.asm" 2>/dev/null || true
+  fi
   
   local times=()
   local throughputs=()
@@ -50,9 +52,11 @@ run_one() {
 build transform-c Dockerfile.c
 build transform-cpp Dockerfile.cpp
 build transform-rust Dockerfile.rust
+build transform-java Dockerfile.java
 
 echo
 printf "% -15s % -12s % -12s % -20s\n" "lang" "min_ms" "mean_ms" "Vertices/sec"
 run_one transform-c
 run_one transform-cpp
 run_one transform-rust
+run_one transform-java

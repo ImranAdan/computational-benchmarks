@@ -15,7 +15,9 @@ run_one() {
   local runs="${RUNS:-3}"
   
   # Extract ASM
-  docker run --rm "$name" objdump -d /bench/bench > "$ROOT_DIR/asm/${name}.asm"
+  if [[ "$name" != *python* && "$name" != *java* ]]; then
+    docker run --rm "$name" objdump -d /bench/bench > "$ROOT_DIR/asm/${name}.asm" 2>/dev/null || true
+  fi
   
   local times=()
   local throughputs=()
@@ -44,9 +46,11 @@ run_one() {
 build sha-c Dockerfile.c
 build sha-cpp Dockerfile.cpp
 build sha-rust Dockerfile.rust
+build sha-java Dockerfile.java
 
 echo
 printf "% -15s % -12s % -12s % -15s % -20s\n" "lang" "min_ms" "mean_ms" "Hashes/sec" "Final Hash (Last 20)"
 run_one sha-c
 run_one sha-cpp
 run_one sha-rust
+run_one sha-java

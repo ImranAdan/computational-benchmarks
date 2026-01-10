@@ -15,7 +15,9 @@ run_one() {
   local runs="${RUNS:-3}"
   
   # Extract ASM
-  docker run --rm "$name" objdump -d /bench/bench > "$ROOT_DIR/asm/${name}.asm"
+  if [[ "$name" != *python* && "$name" != *java* ]]; then
+    docker run --rm "$name" objdump -d /bench/bench > "$ROOT_DIR/asm/${name}.asm" 2>/dev/null || true
+  fi
   
   local times=()
   local throughputs=()
@@ -51,9 +53,11 @@ run_one() {
 build mandel-c Dockerfile.c
 build mandel-cpp Dockerfile.cpp
 build mandel-rust Dockerfile.rust
+build mandel-java Dockerfile.java
 
 echo
 printf "% -12s % -12s % -12s % -15s\n" "lang" "min_ms" "mean_ms" "MPix/sec"
 run_one mandel-c
 run_one mandel-cpp
 run_one mandel-rust
+run_one mandel-java

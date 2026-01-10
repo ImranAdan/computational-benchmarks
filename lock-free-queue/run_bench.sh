@@ -18,7 +18,9 @@ run_one() {
   mkdir -p "$ROOT_DIR/asm"
 
   # Extract ASM
-  docker run --rm "$name" objdump -d /bench/bench > "$ROOT_DIR/asm/${name}.asm" 2>/dev/null || true
+  if [[ "$name" != *python* && "$name" != *java* ]]; then
+    docker run --rm "$name" objdump -d /bench/bench > "$ROOT_DIR/asm/${name}.asm" 2>/dev/null || true
+  fi
 
   local times=()
   local throughputs=()
@@ -55,6 +57,7 @@ echo "Building Docker images..."
 build queue-c Dockerfile.c
 build queue-cpp Dockerfile.cpp
 build queue-rust Dockerfile.rust
+build queue-java Dockerfile.java
 
 echo
 echo "Lock-Free Queue Benchmark: 4 producers, 4 consumers, 4M total operations"
@@ -64,3 +67,4 @@ echo "--------------------------------------------------------------------------
 run_one queue-c
 run_one queue-cpp
 run_one queue-rust
+run_one queue-java
