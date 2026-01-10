@@ -53,6 +53,7 @@ build pipe-c Dockerfile.c
 build pipe-cpp Dockerfile.cpp
 build pipe-rust Dockerfile.rust
 build pipe-java Dockerfile.java
+build pipe-zig Dockerfile.zig
 
 echo
 printf "% -15s % -12s % -12s % -15s\n" "lang" "min_ms" "mean_ms" "GB/sec"
@@ -60,3 +61,4 @@ run_one pipe-c
 run_one pipe-cpp
 run_one pipe-rust
 run_one pipe-java
+run_one pipe-zig

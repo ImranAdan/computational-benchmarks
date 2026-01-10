@@ -13,7 +13,8 @@ program nbody
     real(8), allocatable :: fx_buf(:), fy_buf(:), fz_buf(:)
 
     integer(8) :: seed
-    real(8) :: checksum, start_time, end_time, elapsed_ms
+    real(8) :: checksum, elapsed_ms
+    integer(8) :: count_rate, t1, t2
     integer :: i
 
     ! Allocate arrays
@@ -38,11 +39,11 @@ program nbody
     call run_steps(steps_warmup, x, y, z, vx, vy, vz, m, fx_buf, fy_buf, fz_buf)
 
     ! Timed run
-    call cpu_time(start_time)
+    call system_clock(t1, count_rate)
     call run_steps(steps, x, y, z, vx, vy, vz, m, fx_buf, fy_buf, fz_buf)
-    call cpu_time(end_time)
+    call system_clock(t2)
 
-    elapsed_ms = (end_time - start_time) * 1000.0d0
+    elapsed_ms = dble(t2 - t1) / dble(count_rate) * 1000.0d0
 
     ! Compute checksum
     checksum = 0.0d0
@@ -57,30 +58,21 @@ program nbody
 
 contains
 
-    subroutine lcg_next(state)
-        integer(8), intent(inout) :: state
-        ! Fortran handles overflow via wraparound for integer(8)
-        state = state * 6364136223846793005_8 + 1_8
-    end subroutine lcg_next
-
     function lcg_double(state) result(val)
         integer(8), intent(inout) :: state
         real(8) :: val
         integer(8) :: shifted
-        real(8) :: unsigned_val
+        integer(8), parameter :: mult = int(Z'5851F42D4C957F2D', 8)
 
-        call lcg_next(state)
-
-        ! Logical right shift by 11 bits
+        ! state = state * mult + 1 (with wraparound)
+        state = state * mult + 1_8
+        
+        ! Logical shift right by 11
         shifted = ishft(state, -11)
+        ! Ensure high bits are zero (already true for logical shift, but being explicit)
+        shifted = iand(shifted, int(Z'1FFFFFFFFFFFFF', 8))
 
-        ! Convert signed int64 to unsigned double representation
-        ! After shifting right by 11, result fits in 53 bits (always positive after logical shift)
-        ! ishft does logical shift so high bits are 0, result is always >= 0
-        unsigned_val = dble(shifted)
-
-        ! Map [0, 2^53) to [-1, 1)
-        val = unsigned_val * (1.0d0 / 9007199254740992.0d0) * 2.0d0 - 1.0d0
+        val = dble(shifted) * (1.0d0 / 9007199254740992.0d0) * 2.0d0 - 1.0d0
     end function lcg_double
 
     subroutine run_steps(count, x, y, z, vx, vy, vz, m, fx_buf, fy_buf, fz_buf)

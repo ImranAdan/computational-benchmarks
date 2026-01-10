@@ -1,5 +1,5 @@
 # Computational Benchmarks Lab
-> A standardized suite comparing C, C++, Rust, and Java (OpenJDK 21).
+> A standardized suite comparing C, C++, Rust, Java, Zig, and Fortran.
 
 ## Project Overview
 This repository contains a suite of six benchmarks designed to evaluate the performance of modern high-level runtimes against systems languages. The project enforces a "Golden Standard" of methodology to ensure that comparisons are fair and that results are reproducible across different architectures.
@@ -9,20 +9,16 @@ This repository contains a suite of six benchmarks designed to evaluate the perf
 ---
 
 ## Results Summary (ARM64)
-*Measured on Apple Silicon | 12-Core | Docker (Linux VM)*
+*Measured on Apple Silicon | Docker (Linux VM)*
 
-| Benchmark | C (Clang 14) | C++ (Clang++) | Rust (1.75) | Java (JVM 21) | Winner |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| [Mandelbrot](./mandelbrot/) | 11.12 MPix/s | 12.63 MPix/s | 16.33 MPix/s | 13.17 MPix/s | Rust |
-| [N-Body Simulation](./nbody-simulation/) | 585 ms | 601 ms | 664 ms | 965 ms | C++ |
-| [SHA-256 Cryptography](./sha256-cryptography/) | 2.15 MH/s | 2.47 MH/s | 4.08 MH/s | 3.04 MH/s | Rust |
-| [3D Vertex Transform](./3d-vertex-transform/) | 777 M/s | 527 M/s | 425 M/s | 158 M/s | C |
-| [Lock-Free Queue](./lock-free-queue/) | 19.6M ops/s | 10.1M ops/s | 5.6M ops/s | 3.6M ops/s | C |
-| [Kernel Pipe Throughput](./kernel-pipe-throughput/) | 3.12 GB/s | 3.07 GB/s | 3.27 GB/s | 0.99 GB/s | C |
-
-**Experimental Languages (N-Body only):**
-- Zig (0.13.0): **670 ms** - comparable to Rust
-- Fortran (gfortran): **680 ms** - comparable to Rust/Zig
+| Benchmark | C | C++ | Rust | Java | Zig | Fortran | Winner |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| [Mandelbrot](./mandelbrot/) | 9.24 MPix/s | 8.17 MPix/s | 8.54 MPix/s | 7.36 MPix/s | 9.79 MPix/s | **12.87 MPix/s** | **Fortran** |
+| [N-Body Simulation](./nbody-simulation/) | 1225 ms | **1220 ms** | 1276 ms | 1873 ms | 1318 ms | 1873 ms | **C++** |
+| [SHA-256 Cryptography](./sha256-cryptography/) | 1.84 MH/s | 1.86 MH/s | 2.43 MH/s | 2.10 MH/s | **2.48 MH/s** | 2.41 MH/s | **Zig** |
+| [3D Vertex Transform](./3d-vertex-transform/) | **670 M/s** | 642 M/s | 411 M/s | 95 M/s | 506 M/s | 332 M/s | **C** |
+| [Lock-Free Queue](./lock-free-queue/) | **8.0M ops/s** | 7.6M ops/s | 4.1M ops/s | 2.6M ops/s | 5.9M ops/s | N/A | **C** |
+| [Kernel Pipe Throughput](./kernel-pipe-throughput/) | 2.10 GB/s | **2.16 GB/s** | 2.12 GB/s | 0.53 GB/s | 1.65 GB/s | N/A | **C++** |
 
 ---
 

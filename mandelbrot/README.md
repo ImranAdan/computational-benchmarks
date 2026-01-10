@@ -24,3 +24,14 @@ This benchmark renders a $4000 \times 4000$ image of the Mandelbrot set set frac
 ## Verification
 *   **Visual**: A `.ppm` image is generated and compared.
 *   **Checksum**: Pixel-sum verification ensured.
+
+## Latest Results (2026-01-10)
+
+| Language | Mean Time | Throughput | Checksum |
+|----------|-----------|------------|----------|
+| **Fortran** | **1251 ms** | **12.87 MPix/s** | Unique |
+| **Zig** | 1762 ms | 9.79 MPix/s | Matches Java |
+| **C** | 1783 ms | 9.24 MPix/s | Matches C++ |
+| **Rust** | 2007 ms | 8.54 MPix/s | Unique |
+| **C++** | 1975 ms | 8.17 MPix/s | Matches C |
+| **Java** | 2179 ms | 7.36 MPix/s | Matches Zig |

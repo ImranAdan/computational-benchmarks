@@ -25,3 +25,13 @@ A high-contention multi-producer multi-consumer (MPMC) queue benchmark using Dmi
 ## Verification
 *   **Checksum**: The sum of all dequeued values must match the expected sequence total.
 *   **Status**: PASSED.
+
+## Latest Results (2026-01-10)
+
+| Language | Mean Time | Throughput | Status |
+|----------|-----------|------------|--------|
+| **C** | **509 ms** | **7.99 M/s** | OK |
+| **C++** | 533 ms | 7.59 M/s | OK |
+| **Zig** | 688 ms | 5.85 M/s | OK |
+| **Rust** | 995 ms | 4.07 M/s | OK |
+| **Java** | 1518 ms | 2.64 M/s | OK |

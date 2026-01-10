@@ -22,3 +22,14 @@ This benchmark measures the throughput of SHA-256 hashing by processing one mill
 ## Verification
 *   **Checksum**: The final hash of the 1,000,000th nonce must match the baseline (`0c8b1d...`).
 *   **Status**: PASSED.
+
+## Latest Results (2026-01-10)
+
+| Language | Mean Time | Throughput | Checksum |
+|----------|-----------|------------|----------|
+| **Zig** | **402 ms** | **2.48 MH/s** | MATCH |
+| **Rust** | 411 ms | 2.43 MH/s | MATCH |
+| **Fortran** | 416 ms | 2.41 MH/s | MATCH |
+| **Java** | 477 ms | 2.10 MH/s | MATCH |
+| **C** | 543 ms | 1.84 MH/s | MATCH |
+| **C++** | 537 ms | 1.86 MH/s | MATCH |

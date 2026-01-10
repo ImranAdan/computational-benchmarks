@@ -54,10 +54,14 @@ build mandel-c Dockerfile.c
 build mandel-cpp Dockerfile.cpp
 build mandel-rust Dockerfile.rust
 build mandel-java Dockerfile.java
+build mandel-zig Dockerfile.zig
+build mandel-fortran Dockerfile.fortran
 
 echo
-printf "% -12s % -12s % -12s % -15s\n" "lang" "min_ms" "mean_ms" "MPix/sec"
+printf "% -14s % -12s % -12s % -15s\n" "lang" "min_ms" "mean_ms" "MPix/sec"
 run_one mandel-c
 run_one mandel-cpp
 run_one mandel-rust
 run_one mandel-java
+run_one mandel-zig
+run_one mandel-fortran

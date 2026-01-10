@@ -47,6 +47,8 @@ build sha-c Dockerfile.c
 build sha-cpp Dockerfile.cpp
 build sha-rust Dockerfile.rust
 build sha-java Dockerfile.java
+build sha-zig Dockerfile.zig
+build sha-fortran Dockerfile.fortran
 
 echo
 printf "% -15s % -12s % -12s % -15s % -20s\n" "lang" "min_ms" "mean_ms" "Hashes/sec" "Final Hash (Last 20)"
@@ -54,3 +56,5 @@ run_one sha-c
 run_one sha-cpp
 run_one sha-rust
 run_one sha-java
+run_one sha-zig
+run_one sha-fortran

@@ -58,6 +58,7 @@ build queue-c Dockerfile.c
 build queue-cpp Dockerfile.cpp
 build queue-rust Dockerfile.rust
 build queue-java Dockerfile.java
+build queue-zig Dockerfile.zig
 
 echo
 echo "Lock-Free Queue Benchmark: 4 producers, 4 consumers, 4M total operations"
@@ -68,3 +69,4 @@ run_one queue-c
 run_one queue-cpp
 run_one queue-rust
 run_one queue-java
+run_one queue-zig

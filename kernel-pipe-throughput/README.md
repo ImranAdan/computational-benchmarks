@@ -25,3 +25,13 @@ This benchmark measures the throughput of inter-process communication (IPC) usin
 ## Verification
 *   **Checksum**: The child's XOR checksum must match the parent's data pattern.
 *   **Status**: PASSED.
+
+## Latest Results (2026-01-10)
+
+| Language | Mean Time | Bandwidth |
+|----------|-----------|-----------|
+| **C++** | **4641 ms** | **2.16 GB/s** |
+| **Rust** | 4734 ms | 2.12 GB/s |
+| **C** | 4787 ms | 2.10 GB/s |
+| **Zig** | 6117 ms | 1.65 GB/s |
+| **Java** | 18720 ms | 0.53 GB/s |

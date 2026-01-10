@@ -53,10 +53,14 @@ build transform-c Dockerfile.c
 build transform-cpp Dockerfile.cpp
 build transform-rust Dockerfile.rust
 build transform-java Dockerfile.java
+build transform-zig Dockerfile.zig
+build transform-fortran Dockerfile.fortran
 
 echo
-printf "% -15s % -12s % -12s % -20s\n" "lang" "min_ms" "mean_ms" "Vertices/sec"
+printf "% -17s % -12s % -12s % -20s\n" "lang" "min_ms" "mean_ms" "Vertices/sec"
 run_one transform-c
 run_one transform-cpp
 run_one transform-rust
 run_one transform-java
+run_one transform-zig
+run_one transform-fortran

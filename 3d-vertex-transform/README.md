@@ -24,3 +24,14 @@ This benchmark simulates a "live" 3D graphics pipeline stage, transforming 250,0
 ## Verification
 *   **Checksum**: The sum of all projected X/Y coordinates must match exactly.
 *   **Status**: PASSED.
+
+## Latest Results (2026-01-10)
+
+| Language | Mean Time | Throughput |
+|----------|-----------|------------|
+| **C** | **37.3 ms** | **670 M/s** |
+| **C++** | 39.1 ms | 642 M/s |
+| **Zig** | 51.1 ms | 506 M/s |
+| **Rust** | 60.9 ms | 411 M/s |
+| **Fortran** | 75.5 ms | 332 M/s |
+| **Java** | 269 ms | 95 M/s |

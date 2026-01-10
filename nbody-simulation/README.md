@@ -40,3 +40,14 @@ This benchmark simulates the gravitational interaction between a set of particle
 ## Verification
 *   **Checksum**: The sum of all positions and velocities at step 50 must match exactly across all languages.
 *   **Status**: PASSED.
+
+## Latest Results (2026-01-10)
+
+| Language | Mean Time | Checksum | Status |
+|----------|-----------|----------|--------|
+| **C++** | **1220 ms** | `6673.544927` | MATCH |
+| **C** | 1225 ms | `6673.544927` | MATCH |
+| **Rust** | 1276 ms | `6673.544927` | MATCH |
+| **Zig** | 1318 ms | `6673.544927` | MATCH |
+| **Fortran** | 1873 ms | `6673.544927` | MATCH |
+| **Java** | 1873 ms | `6673.544927` | MATCH |

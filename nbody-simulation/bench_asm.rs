@@ -61,8 +61,10 @@ unsafe fn calc_step_asm(
             
             // Calculate dist2 = dx*dx + dy*dy + dz*dz + softening
             "fmul v20.2d, v16.2d, v16.2d", // dx*dx
-            "fmla v20.2d, v17.2d, v17.2d", // + dy*dy
-            "fmla v20.2d, v18.2d, v18.2d", // + dz*dz
+            "fmul v22.2d, v17.2d, v17.2d", // dy*dy
+            "fadd v20.2d, v20.2d, v22.2d", // + dy*dy
+            "fmul v22.2d, v18.2d, v18.2d", // dz*dz
+            "fadd v20.2d, v20.2d, v22.2d", // + dz*dz
             "fadd v20.2d, v20.2d, v3.2d",  // + softening
             
             // inv = 1.0 / sqrt(dist2)
@@ -77,11 +79,14 @@ unsafe fn calc_step_asm(
             "fmul v21.2d, v19.2d, v21.2d",
             
             // fx += dx * s
-            "fmla v4.2d, v16.2d, v21.2d",
+            "fmul v22.2d, v16.2d, v21.2d",
+            "fadd v4.2d, v4.2d, v22.2d",
             // fy += dy * s
-            "fmla v5.2d, v17.2d, v21.2d",
+            "fmul v22.2d, v17.2d, v21.2d",
+            "fadd v5.2d, v5.2d, v22.2d",
             // fz += dz * s
-            "fmla v6.2d, v18.2d, v21.2d",
+            "fmul v22.2d, v18.2d, v21.2d",
+            "fadd v6.2d, v6.2d, v22.2d",
             
             // Loop control
             "subs x9, x9, #1",
@@ -120,7 +125,7 @@ unsafe fn calc_step_asm(
         out("x9") _,
         out("v4") _, out("v5") _, out("v6") _, out("v7") _,
         out("v16") _, out("v17") _, out("v18") _, out("v19") _,
-        out("v20") _, out("v21") _,
+        out("v20") _, out("v21") _, out("v22") _,
     );
 }
 
