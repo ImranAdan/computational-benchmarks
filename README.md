@@ -22,8 +22,11 @@ A high-volume linear algebra benchmark projecting a rotating 250,000-vertex mesh
 ### 4. [3D Live Polyglot Visualizer (WIP)](./3d-live-visualizer/)
 **Status: Work In Progress**
 A real-time WebGL visualization where the mathematical engine can be swapped between C, C++, and Rust on the fly.
-*   **Key Finding:** Demonstrates real-time polyglot interoperability (FFI) and streaming throughput.
-*   **Interactive:** Use the dashboard to watch "Math Latency" averages change as you switch languages.
+
+### 5. [SHA-256 Cryptography](./sha256-cryptography/)
+A cryptographic "Bit-Crunching" benchmark performing 1,000,000 SHA-256 iterations.
+*   **Key Finding:** Rust is **~2.4x faster** than C/C++ (4.5 MH/s vs 1.8 MH/s).
+*   **Story:** Demonstrates the power of **Hardware Acceleration**. The Rust ecosystem automatically leverages CPU-specific SHA extensions (ARMv8 cryptography extensions), while standard C loops remain limited to general-purpose integer logic.
 
 ## Project Goal
 To provide a fair, containerized environment for assessing the execution efficiency of different programming languages across diverse computational tasks.
