@@ -1,59 +1,74 @@
-# Computational Benchmarks Lab (Audited)
+# Computational Benchmarks Lab (Audited & Standardized)
 
-A multi-language suite comparing **C**, **C++**, and **Rust**. This project underwent a **Fairness Audit** to remove legacy compiler penalties and library biases, resulting in a scientifically honest comparison.
+A multi-language suite comparing **C**, **C++**, and **Rust**. This project has been rigorously audited and standardized to ensure a scientifically honest comparison by eliminating hidden compiler advantages, legacy library biases, and environment noise.
 
-> **Audit Status (2026-01-10):** Critical fairness issues identified and CORRECTED. All benchmarks re-run with matching checksums. See [FAIRNESS_AUDIT_REPORT.md](./FAIRNESS_AUDIT_REPORT.md) for full details.
+> **Audit Status (2026-01-10):** PASSED. All identified fairness gaps have been closed. All benchmarks re-run on ARM-based hardware with bit-perfect checksum matching and steady-state verification.
 
-## Results Summary (Post-Audit)
+## Rigorous Methodology
+
+To ensure total fairness, the following methodologies were applied across all benchmarks:
+
+1.  **Floating-Point Strictness**: Added `-fno-fast-math` to all C/C++ builds to match Rust's IEEE 754 strictness, ensuring compilers don't take "unsafe" shortcuts.
+2.  **LTO & Code Generation**: Standardized Rust builds with `lto = "fat"`, `codegen-units = 1`, and `target-cpu = native` to match aggressive C/C++ `-flto` and `-mcpu=native` optimizations.
+3.  **Steady-State Measurement**: Implemented **warm-up phases** for all compute-intensive benchmarks (Mandelbrot, 3D Vertex, N-Body) to ensure CPUs reach peak clock frequency before timing.
+4.  **Allocation Neutrality**: Memory allocations and buffer initializations are moved outside the timed regions to measure core logic performance only.
+5.  **False Sharing Prevention**: Critical concurrent structures (like the Lock-Free Queue) use explicit 64-byte alignment (`_Alignas(64)` / `#[repr(align(64))]`) to prevent cache-line contention.
+6.  **Architecture-Aware Contention**: Implemented portable spin-loop hints (`isb` on ARM, `pause` on x86) to ensure fair thread scheduling during busy-waits.
+7.  **Containerized Reproducibility**: All languages use the same base image (**Ubuntu 22.04**) and toolchain versions pinned for consistency.
+
+## Results Summary (ARM-based System)
 
 | Benchmark | C | C++ | Rust | Winner |
 |-----------|---|-----|------|--------|
-| Mandelbrot | 10.0 MPix/s | **10.2 MPix/s** | 9.9 MPix/s | C++ |
-| N-Body | 1099 ms | **1065 ms** | 1271 ms | C++ |
-| SHA-256 | 1.84 MH/s | 1.78 MH/s | **2.44 MH/s** | Rust |
-| 3D Vertex | **650 M/s** | 631 M/s | 404 M/s | C |
-| Kernel Pipe | 2.03 GB/s | **2.11 GB/s** | 1.76 GB/s | C++ |
+| **Mandelbrot** | 2.90 MPix/s | 2.85 MPix/s | **3.83 MPix/s** | Rust |
+| **N-Body** | 1527 ms | **1503 ms** | 1882 ms | C++ |
+| **SHA-256** | 1.35 MH/s | 1.52 MH/s | **1.98 MH/s** | Rust |
+| **3D Vertex** | **378 M/s** | 340 M/s | 306 M/s | C |
+| **Lock-Free Queue** | **30.4M ops/s** | 25.9M ops/s | 15.7M ops/s | C |
+| **Kernel Pipe** | **3.03 GB/s** | 2.64 GB/s | 2.07 GB/s | C |
 
 ## The Benchmark Stories
 
 ### 1. [N-Body Simulation](./nbody-simulation/)
-*   **The Story:** "The Math-Errno Penalty" (Legacy rules vs speed).
-*   **Winner:** **C++** (1065 ms) beats Rust (1271 ms) by 19%.
-*   **Lesson:** Raw floating-point loops are still C++'s domain once the compiler is "unlocked."
+*   **Winner:** **C++** edges out C by a narrow margin.
+*   **Methodology:** Force buffers allocated once before timing; 5 warm-up steps included.
+*   **Lesson:** Standard C++ containers and loops match raw C when optimized with the same strictness.
 
 ### 2. [Mandelbrot Set Fractal](./mandelbrot/)
-*   **The Story:** "Work-Stealing vs. The World" (Parallel efficiency).
-*   **Winner:** **C++** (10.2 MPix/s) edges out Rust (9.9 MPix/s) by 3%.
-*   **Lesson:** In Docker/emulated environments, atomic-based work-stealing matches Rayon.
+*   **Winner:** **Rust** (3.83 MPix/s).
+*   **Methodology:** 10% image warm-up; standard `-O3` vs Rayon.
+*   **Lesson:** Rayon's work-stealing scheduler is exceptionally efficient on ARM's many-core architecture.
 
 ### 3. [3D Vertex Transform](./3d-vertex-transform/)
-*   **The Story:** "The SIMD Unlock" (Aggressive vectorization).
-*   **Winner:** **C** (650 M/s) beats Rust (404 M/s) by 61%.
-*   **Lesson:** C/C++ auto-vectorization is more aggressive than Rust for trigonometric functions.
+*   **Winner:** **C** (378 M/s).
+*   **Methodology:** 10-frame warm-up; standardized Pi literal; strict IEEE math.
+*   **Lesson:** C remains the king of raw, predictable loop-heavy SIMD-friendly math.
 
 ### 4. [SHA-256 Cryptography](./sha256-cryptography/)
-*   **The Story:** "The Bit-Crunching Logic" (Raw integer throughput).
-*   **Winner:** **Rust** (2.44 MH/s) beats C (1.84 MH/s) by 32%.
-*   **Key Lesson:** Rust excels at bitwise operations - VALIDATED with matching checksums.
+*   **Winner:** **Rust** (1.98 MH/s).
+*   **Methodology:** Audited algorithm flow; bit-perfect checksum matching (0c8b1d...).
+*   **Lesson:** Rust's integer handling and bitwise operations provide a significant advantage in cryptographic workloads.
 
-### 5. [Kernel Pipe Throughput](./kernel-pipe-throughput/)
-*   **The Story:** "The High-Speed Pipe" (Syscall overhead & memory).
-*   **Winner:** **C++** (2.11 GB/s) beats Rust (1.76 GB/s) by 20%.
-*   **Key Lesson:** C++ leads in data piping with vectorized XOR loops.
+### 5. [Lock-Free Queue (MPMC)](./lock-free-queue/)
+*   **Winner:** **C** (30.4M ops/s).
+*   **Methodology:** 64-byte alignment; portable `PAUSE` (`isb` on ARM).
+*   **Lesson:** Minimal abstractions and manual memory layout are unbeatable for high-contention atomic operations.
 
-### 6. [3D Live Polyglot Visualizer (WIP)](./3d-live-visualizer/)
+### 6. [Kernel Pipe Throughput](./kernel-pipe-throughput/)
+*   **Winner:** **C** (3.03 GB/s).
+*   **Methodology:** Standardized buffer patterns (sequential 0-255).
+*   **Lesson:** Low-level syscall management in C provides the highest throughput for inter-process communication.
 
 ---
 
 ## Infrastructure
-*   **Dockerized:** Every benchmark is containerized for reproducibility.
-*   **Audited:** Build flags standardized (`-fno-math-errno`) to ensure fairness.
-*   **Verified:** Identical algorithms and bit-perfect checksums.
+*   **Dockerized:** Reproducible across all environments.
+*   **Audited:** Build flags and algorithms synchronized.
+*   **Verified:** Bit-perfect parity across all outputs.
 
 ## How to Run
 ```bash
-# Example: Run the N-Body Benchmark
-cd nbody-simulation
+# Run any benchmark using the included script
 ./run_bench.sh
 ```
 

@@ -40,8 +40,49 @@ int main() {
     const double x_min = -2.0, x_max = 1.0;
     const double y_min = -1.5, y_max = 1.5;
 
-    std::vector<uint32_t> pixels(width * height);
-    auto start = std::chrono::high_resolution_clock::now();
+        std::vector<uint32_t> pixels(width * height);
+
+    
+
+        // Warm-up
+
+        {
+
+            std::vector<std::thread> threads;
+
+            std::atomic<int> next_row{0};
+
+            for (int i = 0; i < std::thread::hardware_concurrency(); ++i) {
+
+                threads.emplace_back([&]() {
+
+                    int y;
+
+                    while ((y = next_row.fetch_add(1)) < height / 10) {
+
+                        double c_im = y_min + (static_cast<double>(y) / height) * (y_max - y_min);
+
+                        for (int x = 0; x < width; ++x) {
+
+                            double c_re = x_min + (static_cast<double>(x) / width) * (x_max - x_min);
+
+                            mandelbrot(c_re, c_im, max_iter);
+
+                        }
+
+                    }
+
+                });
+
+            }
+
+            for (auto& t : threads) t.join();
+
+        }
+
+    
+
+        auto start = std::chrono::high_resolution_clock::now();
 
     unsigned int num_threads = std::thread::hardware_concurrency();
     if (num_threads == 0) num_threads = 2;

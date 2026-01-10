@@ -53,6 +53,15 @@ fn main() {
     }
 
     println!("Starting Live 3D Calculation Session...");
+    
+    // Warm-up
+    for frame in 0..10 {
+        let angle = (frame as f64) * 0.01;
+        for p in &vertices {
+            rotate_and_project(p, angle);
+        }
+    }
+
     let start = Instant::now();
     let mut checksum = 0.0;
 

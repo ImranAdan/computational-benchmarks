@@ -35,6 +35,16 @@ int main() {
 
     uint32_t *pixels = malloc(width * height * sizeof(uint32_t));
 
+    // Warm-up
+    #pragma omp parallel for schedule(dynamic, 1)
+    for (int y = 0; y < height / 10; y++) {
+        double c_im = y_min + ((double)y / height) * (y_max - y_min);
+        for (int x = 0; x < width; x++) {
+            double c_re = x_min + ((double)x / width) * (x_max - x_min);
+            mandelbrot(c_re, c_im, max_iter);
+        }
+    }
+
     double start = now_ms();
 
     #pragma omp parallel for schedule(dynamic, 1)

@@ -5374,24 +5374,24 @@ Disassembly of section .text:
     8b38:	f9004fe8 	str	x8, [sp, #152]
     8b3c:	910223e0 	add	x0, sp, #0x88
     8b40:	9400bc3b 	bl	37c2c <_ZN3std2io5stdio6_print17hdd860001209cfb53E>
-    8b44:	9400c94a 	bl	3b06c <_ZN3std3sys3pal4unix4time8Timespec3now17h30c32d953203ad15E>
-    8b48:	f90007e0 	str	x0, [sp, #8]
-    8b4c:	b90007e1 	str	w1, [sp, #4]
-    8b50:	900001a9 	adrp	x9, 3c000 <OUTLINED_FUNCTION_74+0xc>
-    8b54:	2f00e408 	movi	d8, #0x0
-    8b58:	f9401ff3 	ldr	x19, [sp, #56]
-    8b5c:	fd428929 	ldr	d9, [x9, #1296]
-    8b60:	d2c80009 	mov	x9, #0x400000000000        	// #70368744177664
-    8b64:	1e62900a 	fmov	d10, #5.000000000000000000e+00
-    8b68:	f2e811e9 	movk	x9, #0x408f, lsl #48
-    8b6c:	d10163aa 	sub	x10, x29, #0x58
+    8b44:	f9401ff3 	ldr	x19, [sp, #56]
+    8b48:	9400c949 	bl	3b06c <_ZN3std3sys3pal4unix4time8Timespec3now17h30c32d953203ad15E>
+    8b4c:	f90007e0 	str	x0, [sp, #8]
+    8b50:	b90007e1 	str	w1, [sp, #4]
+    8b54:	900001a9 	adrp	x9, 3c000 <OUTLINED_FUNCTION_74+0xc>
+    8b58:	2f00e408 	movi	d8, #0x0
+    8b5c:	1e62900a 	fmov	d10, #5.000000000000000000e+00
+    8b60:	fd428929 	ldr	d9, [x9, #1296]
+    8b64:	d2c80009 	mov	x9, #0x400000000000        	// #70368744177664
+    8b68:	d10163a8 	sub	x8, x29, #0x58
+    8b6c:	f2e811e9 	movk	x9, #0x408f, lsl #48
     8b70:	529999bc 	mov	w28, #0xcccd                	// #52429
-    8b74:	9e67012b 	fmov	d11, x9
-    8b78:	52999994 	mov	w20, #0xcccc                	// #52428
+    8b74:	52999994 	mov	w20, #0xcccc                	// #52428
+    8b78:	9e67012b 	fmov	d11, x9
     8b7c:	aa1f03f5 	mov	x21, xzr
-    8b80:	52800028 	mov	w8, #0x1                   	// #1
-    8b84:	91002159 	add	x25, x10, #0x8
-    8b88:	9100427a 	add	x26, x19, #0x10
+    8b80:	91004279 	add	x25, x19, #0x10
+    8b84:	9100211a 	add	x26, x8, #0x8
+    8b88:	52800028 	mov	w8, #0x1                   	// #1
     8b8c:	72b9999c 	movk	w28, #0xcccc, lsl #16
     8b90:	f0000036 	adrp	x22, f000 <_ZN4core3fmt3num3imp52_$LT$impl$u20$core..fmt..Display$u20$for$u20$u32$GT$3fmt17h7c8ec0a2dbe036dcE+0xd8>
     8b94:	910a02d6 	add	x22, x22, #0x280
@@ -5414,7 +5414,7 @@ Disassembly of section .text:
     8bd8:	6d4107e0 	ldp	d0, d1, [sp, #16]
     8bdc:	5291b008 	mov	w8, #0x8d80                	// #36224
     8be0:	72a00b68 	movk	w8, #0x5b, lsl #16
-    8be4:	aa1a03e9 	mov	x9, x26
+    8be4:	aa1903e9 	mov	x9, x25
     8be8:	6d7f1522 	ldp	d2, d5, [x9, #-16]
     8bec:	f1006108 	subs	x8, x8, #0x18
     8bf0:	fc418523 	ldr	d3, [x9], #24
@@ -5449,7 +5449,7 @@ Disassembly of section .text:
     8c64:	f0000028 	adrp	x8, f000 <_ZN4core3fmt3num3imp52_$LT$impl$u20$core..fmt..Display$u20$for$u20$u32$GT$3fmt17h7c8ec0a2dbe036dcE+0xd8>
     8c68:	91015109 	add	x9, x8, #0x54
     8c6c:	d10163a8 	sub	x8, x29, #0x58
-    8c70:	a90a67f6 	stp	x22, x25, [sp, #160]
+    8c70:	a90a6bf6 	stp	x22, x26, [sp, #160]
     8c74:	1e620805 	fmul	d5, d0, d2
     8c78:	1e630826 	fmul	d6, d1, d3
     8c7c:	a90923e9 	stp	x9, x8, [sp, #144]

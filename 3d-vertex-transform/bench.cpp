@@ -28,7 +28,7 @@ int main() {
     const int num_frames = 100;
     
     std::vector<Point3D> vertices(num_vertices);
-    double pi = std::acos(-1.0);
+    double pi = 3.14159265358979323846;
     double sqrt5 = std::sqrt(5.0);
 
     for (int i = 0; i < num_vertices; i++) {
@@ -39,6 +39,15 @@ int main() {
     }
 
     std::printf("Starting Live 3D Calculation Session...\n");
+    
+    // Warm-up
+    for (int frame = 0; frame < 10; frame++) {
+        double angle = frame * 0.01;
+        for (const auto& v : vertices) {
+            rotate_and_project(v, angle);
+        }
+    }
+
     auto start = std::chrono::high_resolution_clock::now();
     double checksum = 0.0;
 

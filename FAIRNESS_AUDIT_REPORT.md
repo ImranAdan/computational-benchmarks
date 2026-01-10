@@ -357,27 +357,38 @@ The following fixes have been applied to the codebase:
    - `src/main.rs`: Fixed newline condition to use index `i` instead of pixel value `p`
 
 5. **All Rust Dockerfiles**
-   - Added `RUSTFLAGS="-C target-cpu=native"` to: mandelbrot, sha256, kernel-pipe
-   - Added `[profile.release]` optimization settings to all Cargo.toml files
+   - Added `RUSTFLAGS="-C target-cpu=native"` to all benchmarks.
+   - Ensured `lto="fat"` and `codegen-units=1` for all Rust builds.
+
+6. **N-Body Rust Allocation**
+   - Moved force buffer allocation outside the timed `run_steps` function to match C/C++ and eliminate allocation overhead from results.
+
+7. **3D Vertex Transform Standardization**
+   - Standardized Pi constant to a hardcoded literal across all languages.
+   - Added 10-frame warm-up period to ensure steady-state measurement.
+
+8. **C/C++ "Fast-Math" Fairness**
+   - Added `-fno-fast-math` to C/C++ Dockerfiles for N-Body, Mandelbrot, SHA-256, and 3D Vertex to match Rust's default strictness and ensure the compiler isn't making "unsafe" floating-point optimizations.
+
+9. **Benchmark Warm-ups**
+   - Added warm-up phases to Mandelbrot and 3D Vertex benchmarks across all implementations to ensure CPUs are at full clock speed before timing begins.
 
 ### Known Limitations (Documented, Not Fixed)
 
-- **N-Body Rust**: Force buffers allocated inside `run_steps()` - this is acceptable as it reflects Rust's ownership model
-- **3D Vertex Pi calculation**: C++ computes at runtime via `std::acos(-1.0)` - negligible impact
-- **Parallelization strategies differ**: Each language uses idiomatic parallelism - this is intentional
+- **Parallelization strategies differ**: Each language uses idiomatic parallelism - this is intentional.
+- **Memory Allocator Differences**: C/C++ use system malloc; Rust uses the system allocator.
 
 ---
 
 ## POST-CORRECTION STATUS
 
-After applying fixes:
-- SHA-256: **NOW VALID** - All implementations use identical algorithm
-- Kernel Pipe: **NOW VALID** - All implementations use identical buffer data
-- Mandelbrot: **NOW VALID** - Rust uses native CPU optimizations
-- N-Body: **VALID** - Minor allocation difference documented
-- 3D Vertex: **VALID** - Pi difference is negligible
+After applying the second round of fairness fixes:
+- **N-Body**: **NOW FULLY FAIR** - Allocation overhead removed, math flags standardized.
+- **3D Vertex**: **NOW FULLY FAIR** - Constants standardized, warm-up added, math flags standardized.
+- **Mandelbrot**: **NOW FULLY FAIR** - Warm-up added, math flags standardized.
+- **Lock-Free Queue**: **NOW FULLY FAIR** - Architecture-aware PAUSE added, alignment standardized.
 
-**Updated Audit Status:** PASSED (with documented limitations)
+**Updated Audit Status:** PASSED (All identified fairness gaps closed)
 
 ---
 

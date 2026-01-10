@@ -31,6 +31,15 @@ fn main() {
 
     let mut pixels = vec![0u32; width * height];
 
+    // Warm-up
+    pixels.par_chunks_mut(width).take(height / 10).enumerate().for_each(|(y, row)| {
+        let c_im = y_min + (y as f64 / height as f64) * (y_max - y_min);
+        for x in 0..width {
+            let c_re = x_min + (x as f64 / width as f64) * (x_max - x_min);
+            mandelbrot(c_re, c_im, max_iter);
+        }
+    });
+
     let start = Instant::now();
 
     // Parallel calculation using Rayon
@@ -56,7 +65,7 @@ fn main() {
             let color = (*p % 256) as u8;
             write!(writer, "{} {} 255 ", color, color).unwrap();
         }
-        if i % 16 == 0 { // Just to keep line lengths reasonable (matches C/C++)
+        if (i + 1) % 16 == 0 { // Just to keep line lengths reasonable (matches C/C++)
             writeln!(writer).unwrap();
         }
     }

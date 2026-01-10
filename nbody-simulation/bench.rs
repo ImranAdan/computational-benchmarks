@@ -25,11 +25,10 @@ fn run_steps(
     vy: &mut [f64],
     vz: &mut [f64],
     m: &[f64],
+    fx_buf: &mut [f64],
+    fy_buf: &mut [f64],
+    fz_buf: &mut [f64],
 ) {
-    let mut fx_buf = vec![0.0; n];
-    let mut fy_buf = vec![0.0; n];
-    let mut fz_buf = vec![0.0; n];
-
     for _ in 0..count {
         fx_buf.fill(0.0);
         fy_buf.fill(0.0);
@@ -99,6 +98,10 @@ fn main() {
     let mut vz = vec![0.0f64; n];
     let mut m = vec![0.0f64; n];
 
+    let mut fx_buf = vec![0.0f64; n];
+    let mut fy_buf = vec![0.0f64; n];
+    let mut fz_buf = vec![0.0f64; n];
+
     let mut seed: u64 = 1;
     for i in 0..n {
         x[i] = lcg_double(&mut seed);
@@ -112,10 +115,14 @@ fn main() {
 
     run_steps(
         steps_warmup, n, dt, softening, &mut x, &mut y, &mut z, &mut vx, &mut vy, &mut vz, &m,
+        &mut fx_buf, &mut fy_buf, &mut fz_buf,
     );
 
     let start = Instant::now();
-    run_steps(steps, n, dt, softening, &mut x, &mut y, &mut z, &mut vx, &mut vy, &mut vz, &m);
+    run_steps(
+        steps, n, dt, softening, &mut x, &mut y, &mut z, &mut vx, &mut vy, &mut vz, &m,
+        &mut fx_buf, &mut fy_buf, &mut fz_buf,
+    );
     let elapsed_ms = start.elapsed().as_secs_f64() * 1000.0;
 
     let mut checksum = 0.0;

@@ -46,6 +46,15 @@ int main() {
     }
 
     printf("Starting Live 3D Calculation Session...\n");
+    
+    // Warm-up
+    for (int frame = 0; frame < 10; frame++) {
+        double angle = frame * 0.01;
+        for (int i = 0; i < num_vertices; i++) {
+            rotate_and_project(vertices[i], angle);
+        }
+    }
+
     double start = now_ms();
     double checksum = 0.0;
 
