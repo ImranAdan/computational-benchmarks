@@ -20,6 +20,9 @@ run_one() {
   local times=()
   local throughputs=()
   local out elapsed throughput
+  # Ensure output directory exists
+  mkdir -p "$ROOT_DIR/output"
+
   for ((i=0; i<runs; i++)); do
     echo "Running $name (run $((i+1))/$runs)..."
     out="$(docker run --name "${name}-tmp" "$name")"
@@ -30,7 +33,7 @@ run_one() {
     
     # Extract the image from the last run to verify
     if [ $i -eq $((runs-1)) ]; then
-       docker cp "${name}-tmp:/bench/mandelbrot.ppm" "$ROOT_DIR/${name}.ppm"
+       docker cp "${name}-tmp:/bench/mandelbrot.ppm" "$ROOT_DIR/output/${name}.ppm"
     fi
     docker rm "${name}-tmp" >/dev/null
   done
