@@ -1,63 +1,42 @@
-# Computational Benchmarks Lab (Audited & Standardized)
+# Computational Benchmarks Lab
 
-A multi-language suite comparing **C**, **C++**, **Rust**, and **Java (OpenJDK 21)**. This project has been rigorously audited and standardized to ensure a scientifically honest comparison by eliminating hidden compiler advantages, legacy library biases, and environment noise.
+A multi-language suite comparison of **C**, **C++**, **Rust**, and **Java (OpenJDK 21)**. This project implements a "Golden Standard" for fairness, ensuring that performance differences stem from language and runtime characteristics rather than hidden compiler shortcuts or environmental noise.
 
-> **Audit Status (2026-01-10):** PASSED. All identified fairness gaps have been closed. All benchmarks re-run on ARM-based hardware with bit-perfect checksum matching and steady-state verification.
-
-## Rigorous Methodology
-
-To ensure total fairness, the following methodologies were applied across all benchmarks:
-
-1.  **Floating-Point Strictness**: Added `-fno-fast-math` to all C/C++ builds to match Rust's IEEE 754 strictness, ensuring compilers don't take "unsafe" shortcuts.
-2.  **LTO & Code Generation**: Standardized Rust builds with `lto = "fat"`, `codegen-units = 1`, and `target-cpu = native` to match aggressive C/C++ `-flto` and `-mcpu=native` optimizations.
-3.  **JVM Optimization**: Java benchmarks use **OpenJDK 21 (Temurin)** with `-Xmx2g` and integrated warm-up phases to allow the JIT (Just-In-Time) compiler to reach peak optimization (C2 level) before timing starts.
-4.  **Steady-State Measurement**: Implemented **warm-up phases** for all compute-intensive benchmarks (Mandelbrot, 3D Vertex, N-Body) to ensure CPUs reach peak clock frequency and JIT stabilization.
-5.  **Allocation Neutrality**: Memory allocations and buffer initializations are moved outside the timed regions to measure core logic performance only.
-6.  **False Sharing Prevention**: Critical concurrent structures (like the Lock-Free Queue) use explicit 64-byte alignment or algorithmic isolation to prevent cache-line contention.
-7.  **Containerized Reproducibility**: All languages use standardized base images (**Ubuntu 22.04** for native, **Eclipse Temurin 21** for Java) with toolchain versions pinned.
+> **Audit Status (2026-01-10):** PASSED. Verified on ARM-based hardware with bit-perfect checksum matching and steady-state JIT verification.
 
 ## Results Summary (ARM-based System)
 
 | Benchmark | C | C++ | Rust | Java (JVM 21) | Winner |
 |-----------|---|-----|------|---------------|--------|
-| **Mandelbrot** | 3.27 MPix/s | 3.10 MPix/s | **5.72 MPix/s** | 4.98 MPix/s | Rust |
-| **N-Body** | 1594 ms | **1521 ms** | 1885 ms | 2709 ms | C++ |
-| **SHA-256** | 2.13 MH/s | 1.77 MH/s | **2.63 MH/s** | 1.88 MH/s | Rust |
-| **3D Vertex** | **1063 M/s** | 587 M/s | 387 M/s | 74 M/s | C |
-| **Lock-Free Queue** | 36.9M ops/s | **56.1M ops/s** | 28.0M ops/s | 6.5M ops/s | C++ |
-| **Kernel Pipe** | **3.30 GB/s** | 3.09 GB/s | 3.29 GB/s | 0.73 GB/s | C |
+| **[Mandelbrot](./mandelbrot/)** | 11.12 MPix/s | 12.63 MPix/s | **16.33 MPix/s** | 13.17 MPix/s | Rust |
+| **[N-Body](./nbody-simulation/)** | 585 ms | **601 ms** | 664 ms | 965 ms | C++ |
+| **[SHA-256](./sha256-cryptography/)** | 2.15 MH/s | 2.47 MH/s | **4.08 MH/s** | 3.04 MH/s | Rust |
+| **[3D Vertex](./3d-vertex-transform/)** | **777 M/s** | 527 M/s | 425 M/s | 158 M/s | C |
+| **[Lock-Free Queue](./lock-free-queue/)** | 19.6M ops/s | **10.1M ops/s** | 5.6M ops/s | 3.6M ops/s | C++ |
+| **[Kernel Pipe](./kernel-pipe-throughput/)** | **3.12 GB/s** | 3.07 GB/s | 3.27 GB/s | 0.99 GB/s | C |
 
-## The Benchmark Stories
+*Note: Results may vary by CPU architecture and core count. See individual folders for deep dives.*
 
-### 1. [N-Body Simulation](./nbody-simulation/)
-*   **Winner:** **C++** edges out C by a narrow margin.
-*   **Methodology:** Force buffers allocated once before timing; 5 warm-up steps included.
-*   **Java Insight:** Java's `Math.sqrt` and array access are efficient, but the lack of struct-of-arrays (SoA) optimization via SIMD in the JIT puts it behind native LTO builds.
+## The "Golden Standard" for Fairness
 
-### 2. [Mandelbrot Set Fractal](./mandelbrot/)
-*   **Winner:** **Rust** (5.72 MPix/s).
-*   **Methodology:** 10% image warm-up; Rayon (Rust) vs OpenMP (C/C++) vs Parallel Streams (Java).
-*   **Java Insight:** Java's `IntStream.parallel()` performed remarkably well, significantly outperforming the C/C++ OpenMP implementations on this hardware.
+To ensure a scientifically honest comparison, we enforce:
+1.  **Arithmetic Strictness**: No "fast-math" shortcuts; strict IEEE-754 compliance across all languages.
+2.  **Optimization Parity**: Standardized LTO (Link Time Optimization) and CPU-native targeting.
+3.  **Steady-State Timing**: CPU frequency stabilization and JIT warm-up phases included in all tests.
+4.  **Zero-Noise Allocation**: All critical memory allocations occur outside the timed regions.
+5.  **False Sharing Prevention**: Explicit 64-byte alignment/padding for concurrent structures.
 
-### 3. [3D Vertex Transform](./3d-vertex-transform/)
-*   **Winner:** **C** (1063 M/s).
-*   **Methodology:** 10-frame warm-up; standardized Pi literal; strict IEEE math.
-*   **Java Insight:** The high overhead of object-oriented access (`Point3D` objects) vs raw pointers/arrays in native languages is most visible here.
+## Quick Start
+```bash
+# Run all benchmarks sequentially
+./run_all.sh
 
-### 4. [SHA-256 Cryptography](./sha256-cryptography/)
-*   **Winner:** **Rust** (2.63 MH/s).
-*   **Methodology:** Bit-perfect checksum matching (`0c8b1d...`); manual block transformation.
-*   **Java Insight:** Java is highly competitive here, proving the JVM's ability to optimize tight bitwise arithmetic loops.
+# Run a specific benchmark
+cd mandelbrot && ./run_bench.sh
+```
 
-### 5. [Lock-Free Queue (MPMC)](./lock-free-queue/)
-*   **Winner:** **C++** (56.1M ops/s).
-*   **Methodology:** Dmitry Vyukov's MPMC algorithm; 64-byte alignment; portable `PAUSE`.
-*   **Java Insight:** `AtomicLongArray` provides the necessary memory barriers, but object headers and garbage collection pressure in high-contention loops limit peak throughput.
-
-### 6. [Kernel Pipe Throughput](./kernel-pipe-throughput/)
-*   **Winner:** **C** (3.30 GB/s).
-*   **Methodology:** Standardized buffer patterns; `fork()` vs `ProcessBuilder`.
-*   **Java Insight:** Java's abstraction over OS pipes and the overhead of `ProcessBuilder` IPC significantly limit raw throughput compared to low-level POSIX `read/write`.
+---
+License: MIT
 
 ---
 

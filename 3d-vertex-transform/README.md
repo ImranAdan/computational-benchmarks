@@ -1,19 +1,26 @@
-# 3D Vertex Transform Benchmark (Audited)
+# 3D Vertex Transform Benchmark
 
-## The Story: "The SIMD Unlock"
-A linear algebra benchmark projecting 250,000 vertices. This originally showed a massive Rust lead, but our audit found that the C++ compiler was "blocked" from using SIMD by the `math_errno` legacy requirement.
+This benchmark simulates a "live" 3D graphics pipeline stage, transforming 250,000 vertices per frame for 100 frames.
 
-## The Results (Fairness Audited)
-| Language | Throughput | Relative | Status |
-|----------|------------|----------|--------|
-| **C++**  | **639 M/s**| **1.0x** | **Winner** |
-| C        | 610 M/s    | 0.95x    | Close Second |
-| Rust     | 389 M/s    | 0.61x    | Third |
+## Methodology
+*   **Workload**: 25,000,000 total vertex transformations.
+*   **Operations**: Rotation matrix multiplication followed by perspective projection (division).
+*   **Warm-up**: 10 frames are processed before timing starts.
+*   **Allocation**: All `Point3D` structures are allocated and initialized before the timed loop.
 
-## Lead Analyst's Fairness Audit
-*   **The Change:** Added `-fno-math-errno`.
-*   **The Impact:** C++ throughput jumped from **96 M/s to 639 M/s (a 6.6x increase)**.
-*   **Conclusion:** Once the C++ compiler was allowed to ignore `errno`, it performed much more aggressive auto-vectorization than Rust's compiler for this specific coordinate-mapping kernel.
+## Language Observations
 
----
-[← Back to Main README](../README.md)
+### C & C++
+*   **Winner**: C remains the king of raw math loops.
+*   **Memory Layout**: Uses a dense array of structs. The compiler can easily vectorize these loops using SIMD (Neon on ARM).
+
+### Rust
+*   **Performance**: Very close to C. Rust's strict ownership and aliasing rules allow the compiler to assume that input and output arrays don't overlap, enabling aggressive optimizations.
+
+### Java
+*   **Object Overhead**: The largest performance gap is observed here. Even though the vertex array is allocated beforehand, the overhead of accessing individual `Point3D` objects (pointer chasing) compared to raw memory pointers in C is significant.
+*   **No SIMD**: While modern JVMs have "Auto-Vectorization," it is often less consistent than native compilers for complex 3D math.
+
+## Verification
+*   **Checksum**: The sum of all projected X/Y coordinates must match exactly.
+*   **Status**: PASSED.

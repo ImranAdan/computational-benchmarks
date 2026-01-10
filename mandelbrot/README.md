@@ -1,19 +1,26 @@
-# Mandelbrot Set Benchmark (Audited)
+# Mandelbrot Set Benchmark
 
-## The Story: "Work-Stealing vs. The World"
-This benchmark generates a 16-million pixel fractal. It tests how languages handle **heterogeneous workloads** where some pixels take 100x longer to compute than others.
+This benchmark renders a $4000 \times 4000$ image of the Mandelbrot set set fractal ($max\_iter=1000$). 
 
-## The Results (Fairness Audited)
-| Language | Throughput | Relative | Strategy |
-|----------|------------|----------|-------------------|
-| **Rust** | **12.67 M/s**| **1.0x** | **Rayon (Work-Stealing)** |
-| C++      | 10.67 M/s  | 0.84x    | std::atomic (Dynamic) |
-| C        | 9.40 M/s   | 0.74x    | OpenMP (Dynamic) |
+## Methodology
+*   **Parallelism**: This is a multi-core benchmark. It uses all available CPU threads.
+*   **Warm-up**: 10% of the image (rows) is rendered before timing to stabilize CPU frequency and JIT.
+*   **Work-Stealing**: Uses dynamic scheduling to ensure that harder-to-calculate regions of the fractal don't stall threads.
 
-## Lead Analyst's Fairness Audit
-*   **Fix:** Updated C++ to use a dynamic `std::atomic` counter to match the dynamic nature of Rust and C.
-*   **Result:** C++ improved by over 200%, but **Rust still wins**.
-*   **Conclusion:** Rust's `Rayon` library uses a sophisticated work-stealing algorithm that is more efficient at keeping CPU cores saturated than a simple atomic counter or OpenMP dynamic loop.
+## Language Observations
 
----
-[← Back to Main README](../README.md)
+### C & C++
+*   **Parallelism**: Uses **OpenMP** (`#pragma omp parallel for schedule(dynamic, 1)`).
+*   **Fairness**: Uses standard math without shortcuts. Dynamic scheduling is used to prevent the " fractal edge" problem where some threads finish much faster than others.
+
+### Rust
+*   **Winner**: Usually the fastest in this category.
+*   **Parallelism**: Uses the **Rayon** library for work-stealing. Rayon's scheduler is exceptionally efficient on modern many-core ARM CPUs, often outperforming OpenMP's default implementation.
+
+### Java
+*   **Surprise Performance**: Java's `IntStream.range().parallel()` is very competitive here.
+*   **Parallel Streams**: The JVM's ForkJoinPool manages the workload efficiently. On some ARM architectures, Java beats the C/C++ OpenMP implementations due to more modern load-balancing in its stream library.
+
+## Verification
+*   **Visual**: A `.ppm` image is generated and compared.
+*   **Checksum**: Pixel-sum verification ensured.

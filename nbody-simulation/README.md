@@ -1,22 +1,30 @@
-# N-Body Simulation Benchmark (Audited)
+# N-Body Simulation Benchmark
 
-## The Story: "The Math-Errno Penalty"
-This benchmark simulates gravitational interactions between 1,500 particles. It originally showed Rust winning, but our **Fairness Audit** revealed that C and C++ were being penalized by a legacy rule (`math_errno`) that forces the compiler to track errors for every `sqrt()` call, preventing SIMD optimization.
+This benchmark simulates the gravitational interaction between a set of particles (bodies) using the $O(N^2)$ direct-sum algorithm.
 
-### The Algorithm
-**Symmetric $O(N^2/2)$ algorithm**. Newton's Third Law ($F_{ij} = -F_{ji}$) is applied to halve the workload.
+## Methodology
+*   **Parameters**: $N=1000$ bodies, $50$ simulation steps.
+*   **Initialization**: Bodies are placed in a $[-1.0, 1.0]$ cube with small random velocities using a deterministic LCG.
+*   **Force Buffer**: Auxiliary buffers for forces are allocated once outside the timed region.
+*   **Warm-up**: 5 simulation steps are performed before timing starts.
 
-## The Results (Fairness Audited)
-| Language | Time (ms) | Relative | Status |
-|----------|-----------|----------|--------|
-| **C++**  | **1,067** | **1.0x** | **Winner** |
-| C        | 1,100     | 1.03x    | Close Second |
-| Rust     | 1,266     | 1.18x    | Third |
+## Language Observations
 
-## Lead Analyst's Fairness Audit
-*   **Flags:** Added `-fno-math-errno` and `-ffinite-math-only` to C/C++.
-*   **Result:** With the legacy penalty removed, C++'s optimizer was able to out-schedule Rust's scalar loops.
-*   **Conclusion:** In raw floating-point loops, C++ remains the performance king once the compiler is "unlocked."
+### C & C++
+*   **Performance**: C and C++ are the baselines for this benchmark. 
+*   **Fairness**: Built with `-O3 -flto` but specifically **without** `-ffast-math`. This ensures that `sqrt` and divisions are IEEE-754 compliant, preventing the compiler from reordering operations in a way that would change the result.
+*   **Memory**: Uses a "Struct of Arrays" (SoA) like access pattern for optimal cache locality.
 
----
-[← Back to Main README](../README.md)
+### Rust
+*   **Performance**: Extremely close to C/C++.
+*   **Optimization**: Standard Rust iterators are optimized into efficient loops by LLVM. Rust's strictness with floating-point by default matches our Golden Standard.
+*   **Neon/SIMD**: On ARM, Rust's LLVM backend aggressively uses Neon instructions for the vector math.
+
+### Java
+*   **Performance**: Slower than native but within a $2\times$ margin.
+*   **JIT**: The 5-step warm-up is critical. Without it, the initial steps are interpreted, making the benchmark significantly slower.
+*   **Arithmetic**: Uses `java.lang.Math.sqrt`. Since Java 17, all floating-point math is strict (matching IEEE-754), ensuring bit-perfect parity with the native versions.
+
+## Verification
+*   **Checksum**: The sum of all positions and velocities at step 50 must match exactly across all languages.
+*   **Status**: PASSED.
