@@ -22,10 +22,14 @@ A multi-language suite comparing **C**, **C++**, and **Rust**. This project unde
 ### 4. [SHA-256 Cryptography](./sha256-cryptography/)
 *   **The Story:** "The Bit-Crunching Logic" (Raw integer throughput).
 *   **Winner:** **Rust** (2.7 MH/s) beats C++ (1.8 MH/s).
-*   **Lesson:** Rust is exceptionally fast at pure software bitwise logic and rotations.
+*   **Key Lesson:** Rust is exceptionally fast at pure software bitwise logic and rotations.
 
-### 5. [3D Live Polyglot Visualizer (WIP)](./3d-live-visualizer/)
-*   **Status:** Work In Progress. Experimental interactive mode.
+### 5. [Kernel Pipe Throughput](./kernel-pipe-throughput/)
+*   **The Story:** "The High-Speed Pipe" (Syscall overhead & memory).
+*   **Winner:** **C++** (1.52 GB/s) beats C and Rust.
+*   **Key Lesson:** C++ leads in raw data piping due to aggressive loop vectorization and minimal safety overhead.
+
+### 6. [3D Live Polyglot Visualizer (WIP)](./3d-live-visualizer/)
 
 ---
 
