@@ -1,38 +1,46 @@
-# Computational Benchmarks
+# Computational Benchmarks Lab
 
-A collection of cross-language performance benchmarks for various computational kernels and algorithms.
+A multi-language suite comparing the performance of **C**, **C++**, and **Rust** across distinct computational kernels. Each benchmark tells a unique "story" about modern hardware and compiler optimization.
 
-## Current Benchmarks
+## The Benchmark Stories
 
 ### 1. [N-Body Simulation](./nbody-simulation/)
-A gravitational N-body simulation comparing C, C++, and Rust.
-*   **Key Finding:** Rust (Scalar) outperforms C/C++ by ~23% with identical algorithms.
-*   **Advanced Implementations:** Includes manual AArch64 Assembly and Symmetric $O(N^2/2)$ optimizations.
+*   **The Story:** "The Physics of Aliasing" (Memory Safety vs speed).
+*   **Winner:** **Rust** (1.26s) beats C/C++ (1.63s).
+*   **Key Lesson:** Rust ownership allows more aggressive loop optimizations.
 
-### 2. [Mandelbrot Set](./mandelbrot/)
-A multi-threaded fractal generator testing raw arithmetic throughput and parallel scaling.
-*   **Key Finding:** Rust (using Rayon) is ~18% faster than C (using OpenMP) and ~2.8x faster than C++ (using std::thread).
-*   **Story:** Demonstrates how modern work-stealing schedulers (Rayon) handle non-uniform computational workloads more efficiently than static partitioning.
+### 2. [Mandelbrot Set Fractal](./mandelbrot/)
+*   **The Story:** "The Battle of Schedulers" (Work-stealing vs Static).
+*   **Winner:** **Rust/Rayon** (11.2 M/s) leads the pack.
+*   **Key Lesson:** Modern schedulers are vital for unbalanced workloads.
 
 ### 3. [3D Vertex Transform](./3d-vertex-transform/)
-A high-volume linear algebra benchmark projecting a rotating 250,000-vertex mesh across 100 frames.
-*   **Key Finding:** Rust is **~4.4x faster** than C/C++ (425M vs 95M vertices/sec).
-*   **Story:** Showcases Rust's ability to trigger aggressive auto-vectorization and inlining for mathematical kernels.
+*   **The Story:** "SIMD Auto-Discovery" (Compiler smarts).
+*   **Winner:** **Rust** (425 M/s) is **4.4x faster** than C/C++.
+*   **Key Lesson:** Rust triggers SIMD auto-vectorization more reliably.
 
-### 4. [3D Live Polyglot Visualizer (WIP)](./3d-live-visualizer/)
-**Status: Work In Progress**
-A real-time WebGL visualization where the mathematical engine can be swapped between C, C++, and Rust on the fly.
+### 4. [SHA-256 Cryptography](./sha256-cryptography/)
+*   **The Story:** "The Power of Hardware" (Library acceleration).
+*   **Winner:** **Rust** (4.5 MH/s) beats C/C++ (1.8 MH/s).
+*   **Key Lesson:** Rust's ecosystem makes hardware extensions accessible.
 
-### 5. [SHA-256 Cryptography](./sha256-cryptography/)
-A cryptographic "Bit-Crunching" benchmark performing 1,000,000 SHA-256 iterations.
-*   **Key Finding:** Rust is **~2.4x faster** than C/C++ (4.5 MH/s vs 1.8 MH/s).
-*   **Story:** Demonstrates the power of **Hardware Acceleration**. The Rust ecosystem automatically leverages CPU-specific SHA extensions (ARMv8 cryptography extensions), while standard C loops remain limited to general-purpose integer logic.
+### 5. [3D Live Polyglot Visualizer (WIP)](./3d-live-visualizer/)
+*   **The Story:** "Interoperability & Streaming" (FFI & WebSockets).
+*   **Status:** Interactive Experimental Mode.
 
-## Project Goal
-To provide a fair, containerized environment for assessing the execution efficiency of different programming languages across diverse computational tasks.
+---
 
-## Getting Started
-Each benchmark is self-contained within its own directory and includes a `run_bench.sh` script that utilizes Docker for reproducible results.
+## Infrastructure
+*   **Dockerized:** Reproducible Ubuntu 22.04 environments.
+*   **Verified:** Identical checksums across all languages.
+*   **Hardware:** Benchmarked on Apple Silicon (ARM64).
+
+## How to Run
+Every directory contains a `run_bench.sh` script.
+```bash
+cd nbody-simulation
+./run_bench.sh
+```
 
 ---
 License: MIT
