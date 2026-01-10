@@ -17,7 +17,7 @@ This repository contains a suite of six benchmarks designed to evaluate the perf
 | [N-Body Simulation](./nbody-simulation/) | 585 ms | 601 ms | 664 ms | 965 ms | C++ |
 | [SHA-256 Cryptography](./sha256-cryptography/) | 2.15 MH/s | 2.47 MH/s | 4.08 MH/s | 3.04 MH/s | Rust |
 | [3D Vertex Transform](./3d-vertex-transform/) | 777 M/s | 527 M/s | 425 M/s | 158 M/s | C |
-| [Lock-Free Queue](./lock-free-queue/) | 19.6M ops/s | 10.1M ops/s | 5.6M ops/s | 3.6M ops/s | C++ |
+| [Lock-Free Queue](./lock-free-queue/) | 19.6M ops/s | 10.1M ops/s | 5.6M ops/s | 3.6M ops/s | C |
 | [Kernel Pipe Throughput](./kernel-pipe-throughput/) | 3.12 GB/s | 3.07 GB/s | 3.27 GB/s | 0.99 GB/s | C |
 
 ---
