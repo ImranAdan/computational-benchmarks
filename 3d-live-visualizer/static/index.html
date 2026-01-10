@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>3D Live Session | Stable Dashboard</title>
+    <style>
+        body { margin: 0; background: #050505; color: #fff; font-family: 'Courier New', monospace; overflow: hidden; }
+        #dashboard { 
+            position: absolute; top: 20px; left: 20px; background: rgba(0, 0, 0, 0.9); 
+            padding: 25px; border: 1px solid #00ffff; border-radius: 8px; z-index: 100;
+            width: 380px; box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+        #controls { margin-top: 25px; display: flex; flex-direction: column; gap: 15px; }
+        .engine-btns { display: flex; gap: 10px; }
+        button {
+            background: #111; color: #00ffff; border: 1px solid #00ffff; padding: 10px;
+            cursor: pointer; font-family: inherit; font-weight: bold; transition: all 0.2s; flex: 1;
+        }
+        button:hover { background: #00ffff; color: #000; }
+        button.active { background: #00ffff; color: #000; box-shadow: 0 0 10px #00ffff; }
+        h2 { margin: 0 0 15px 0; color: #00ffff; font-size: 18px; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 10px; }
+        .metric { margin: 12px 0; font-size: 15px; color: #aaa; }
+        .value { color: #00ff00; font-weight: bold; font-size: 18px; float: right; }
+        .slider-group { display: flex; flex-direction: column; gap: 5px; }
+        .slider-header { display: flex; justify-content: space-between; font-size: 12px; color: #00ffff; }
+        input[type=range] { width: 100%; accent-color: #00ffff; cursor: pointer; }
+        #current-engine { display: inline-block; background: #ff00ff; color: #fff; padding: 4px 12px; font-weight: bold; margin-bottom: 15px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div id="dashboard">
+        <div id="current-engine">ACTIVE ENGINE: RUST</div>
+        <h2>Computational Stats</h2>
+        <div class="metric">Math Latency (Avg) <span class="value" id="latency" style="color: #ffcc00">0</span></div>
+        <div class="metric">Throughput <span class="value" id="throughput">0</span></div>
+        <div class="metric">Visual Smoothness <span class="value" id="fps">0</span></div>
+
+        <div id="controls">
+            <div class="slider-group">
+                <div class="slider-header"><span>Vertex Count</span> <span id="v-val">50,000</span></div>
+                <input type="range" min="10000" max="500000" step="10000" value="50000" onchange="updateVertices(this.value)">
+            </div>
+            <div class="slider-group">
+                <div class="slider-header"><span>Target FPS (0=Uncapped)</span> <span id="f-val">60</span></div>
+                <input type="range" min="0" max="120" step="5" value="60" oninput="updateFPS(this.value)">
+            </div>
+            <div class="engine-btns">
+                <button onclick="switchEngine('RUST', 0, this)" class="active">RUST</button>
+                <button onclick="switchEngine('C', 1, this)">C</button>
+                <button onclick="switchEngine('CPP', 2, this)">C++</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: false }); // Disable antialias for speed
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        camera.position.z = 6;
+
+        let geometry = new THREE.BufferGeometry();
+        const material = new THREE.PointsMaterial({ size: 0.015, color: 0x00ffff, transparent: true, opacity: 0.6 });
+        let points = new THREE.Points(geometry, material);
+        scene.add(points);
+
+        let framesThisSecond = 0;
+        let totalVerticesThisSecond = 0;
+        let lastTime = performance.now();
+        const latencyBuffer = [];
+        let isProcessing = false;
+
+        const elFps = document.getElementById('fps');
+        const elThroughput = document.getElementById('throughput');
+        const elLatency = document.getElementById('latency');
+        const elEngine = document.getElementById('current-engine');
+
+        const ws = new WebSocket(`ws://${window.location.host}/ws`);
+        ws.binaryType = 'arraybuffer';
+
+        ws.onmessage = (event) => {
+            if (isProcessing) return; // Drop frame if browser is still rendering
+            isProcessing = true;
+
+            const latency = new Float32Array(event.data.slice(0, 4))[0];
+            const vertices = new Float32Array(event.data.slice(4));
+            
+            // Dispose old attributes to prevent memory leak
+            if (geometry.attributes.position) geometry.attributes.position.array = null;
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+            
+            latencyBuffer.push(latency);
+            if (latencyBuffer.length > 60) latencyBuffer.shift();
+            const avgLatency = latencyBuffer.reduce((a, b) => a + b, 0) / latencyBuffer.length;
+            elLatency.innerText = Math.round(avgLatency).toLocaleString() + " µs";
+            
+            framesThisSecond++;
+            totalVerticesThisSecond += (vertices.length / 3);
+
+            const now = performance.now();
+            if (now - lastTime >= 1000) {
+                elFps.innerText = framesThisSecond + " FPS";
+                elThroughput.innerText = (totalVerticesThisSecond / 1_000_000).toFixed(2) + " M/s";
+                framesThisSecond = 0;
+                totalVerticesThisSecond = 0;
+                lastTime = now;
+            }
+            isProcessing = false;
+        };
+
+        function updateVertices(val) {
+            document.getElementById('v-val').innerText = Number(val).toLocaleString();
+            ws.send(JSON.stringify({type: "vertices", value: Number(val)}));
+            // Clear current geometry to avoid visual artifacts during resize
+            scene.remove(points);
+            geometry.dispose();
+            geometry = new THREE.BufferGeometry();
+            points = new THREE.Points(geometry, material);
+            scene.add(points);
+        }
+
+        function updateFPS(val) {
+            document.getElementById('f-val').innerText = val == 0 ? "Uncapped" : val;
+            ws.send(JSON.stringify({type: "fps", value: Number(val)}));
+        }
+
+        function switchEngine(name, id, btn) {
+            ws.send(JSON.stringify({type: "engine", value: id}));
+            elEngine.innerText = `ACTIVE ENGINE: ${name}`;
+            latencyBuffer.length = 0;
+            document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if (name === 'RUST') material.color.setHex(0x00ffff);
+            if (name === 'C') material.color.setHex(0xffff00);
+            if (name === 'CPP') material.color.setHex(0xff00ff);
+        }
+
+        function animate() { requestAnimationFrame(animate); points.rotation.y += 0.002; renderer.render(scene, camera); }
+        animate();
+        window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+    </script>
+</body>
+</html>

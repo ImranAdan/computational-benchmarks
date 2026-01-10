@@ -17,7 +17,12 @@ A multi-threaded fractal generator testing raw arithmetic throughput and paralle
 ### 3. [3D Vertex Transform](./3d-vertex-transform/)
 A high-volume linear algebra benchmark projecting a rotating 250,000-vertex mesh across 100 frames.
 *   **Key Finding:** Rust is **~4.4x faster** than C/C++ (425M vs 95M vertices/sec).
-*   **Story:** Showcases Rust's ability to trigger aggressive auto-vectorization and inlining for mathematical kernels, significantly outperforming Clang-compiled C/C++ even with identical logic.
+*   **Story:** Showcases Rust's ability to trigger aggressive auto-vectorization and inlining for mathematical kernels.
+
+### 4. [3D Live Polyglot Visualizer](./3d-live-visualizer/)
+A real-time WebGL visualization where the mathematical engine can be swapped between C, C++, and Rust on the fly.
+*   **Key Finding:** Demonstrates real-time polyglot interoperability (FFI) and streaming throughput.
+*   **Interactive:** Use the dashboard to watch "Math Latency" averages change as you switch languages.
 
 ## Project Goal
 To provide a fair, containerized environment for assessing the execution efficiency of different programming languages across diverse computational tasks.
