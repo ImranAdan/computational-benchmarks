@@ -4,8 +4,6 @@
 ## Project Overview
 This repository contains a suite of six benchmarks designed to evaluate the performance of modern high-level runtimes against systems languages. The project enforces a "Golden Standard" of methodology to ensure that comparisons are fair and that results are reproducible across different architectures.
 
-**Audit Status:** PASSED (2026-01-10). Verified on ARM64 hardware with bit-perfect checksum matching.
-
 ---
 
 ## Results Summary (ARM64)
