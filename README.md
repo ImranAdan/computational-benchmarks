@@ -1,5 +1,5 @@
 # Computational Benchmarks Lab
-> A standardized suite comparing C, C++, Rust, Java, Zig, and Fortran.
+> A cross-language benchmark suite for comparing performance characteristics across C, C++, Rust, Java, Zig, and Fortran. Educational and reference use.
 
 ## Project Overview
 This repository contains a suite of six benchmarks designed to evaluate the performance of modern high-level runtimes against systems languages. The project enforces a "Golden Standard" of methodology to ensure that comparisons are fair and that results are reproducible across different architectures.
