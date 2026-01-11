@@ -36,6 +36,10 @@ This benchmark measures the overhead of context switching (switching the CPU bet
 *   **Implementation**: Uses `std.os.pipe` and `fork`.
 *   **Overhead**: While Zig provides low-level control, its standard library I/O wrappers may introduce slight overhead compared to raw syscalls in C, or the buffer management in the loop differs slightly in instruction cache efficiency.
 
+### Fortran
+*   **Status**: **N/A (Out of Scope)**
+*   **Reasoning**: Fortran's standard library does not provide interfaces for POSIX-style process creation (`fork`) or inter-process pipes. Implementing this would require extensive `ISO_C_BINDING` wrappers to call C functions, effectively creating a C benchmark written in Fortran syntax, which defeats the purpose of testing the language's native capabilities.
+
 ## Verification
 *   **Checksum**: The child's XOR checksum must match the parent's data pattern.
 *   **Status**: PASSED.

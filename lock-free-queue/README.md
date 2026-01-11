@@ -36,6 +36,10 @@ This benchmark tests the language's memory model (atomics) and its ability to co
 *   **Padding**: Manual padding struct wrappers are used to ensure 64-byte alignment, matching the C/Rust strategy.
 *   **Performance**: Falls between C++ and Java. It manages contention better than Java but trails the raw pointer efficiency of C.
 
+### Fortran
+*   **Status**: **N/A (Out of Scope)**
+*   **Reasoning**: While modern Fortran (2008/2018) supports some atomic operations, implementing a complex lock-free ring buffer with explicit cache-line padding and pointer manipulation is highly non-idiomatic for the language. Fortran is designed for numerical array processing, not low-level systems programming or complex data structure concurrency.
+
 ## Verification
 *   **Checksum**: The sum of all dequeued values must match the expected sequence total.
 *   **Status**: PASSED.
