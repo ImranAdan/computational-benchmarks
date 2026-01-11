@@ -2,6 +2,13 @@
 
 This benchmark simulates the gravitational interaction between a set of particles (bodies) using the $O(N^2)$ direct-sum algorithm.
 
+## Theoretical Background
+The N-body problem predicts the individual motions of a group of celestial objects interacting with each other gravitationally. In this simulation, we model $N$ particles where every particle exerts a force on every other particle according to Newton's Law of Universal Gravitation:
+
+$$F_{ij} = G \frac{m_i m_j}{|r_{ij}|^2} \frac{r_{ij}}{|r_{ij}|}$$
+
+This is a classic $O(N^2)$ algorithm because computing the net force on a single body requires summing the contributions from all other $N-1$ bodies. While approximation methods like Barnes-Hut ($O(N \log N)$) exist, this benchmark purposefully uses the brute-force direct-sum approach to test raw floating-point throughput and SIMD vectorization capabilities of the CPU and compiler.
+
 ## Methodology
 *   **Parameters**: $N=1000$ bodies, $50$ simulation steps.
 *   **Initialization**: Bodies are placed in a $[-1.0, 1.0]$ cube with small random velocities using a deterministic LCG.

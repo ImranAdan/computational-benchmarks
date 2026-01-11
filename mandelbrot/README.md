@@ -2,6 +2,15 @@
 
 This benchmark renders a $4000 \times 4000$ image of the Mandelbrot set set fractal ($max\_iter=1000$). 
 
+## Theoretical Background
+The Mandelbrot set is the set of complex numbers $c$ for which the function $f_c(z) = z^2 + c$ does not diverge to infinity when iterated from $z = 0$.
+
+For computation, we treat the image plane as the complex plane. For each pixel (representing a specific $c$), we iterate the sequence:
+$z_0 = 0$
+$z_{n+1} = z_n^2 + c$
+
+If the magnitude $|z_n|$ exceeds 2 (the escape radius) within a fixed number of iterations, the point is considered outside the set. The number of iterations it takes to escape determines the pixel's color. This workload is "embarrassingly parallel" but suffers from uneven workload distribution, as points inside the set require the maximum number of iterations, while points far outside escape quickly.
+
 ## Methodology
 *   **Parallelism**: This is a multi-core benchmark. It uses all available CPU threads.
 *   **Warm-up**: 10% of the image (rows) is rendered before timing to stabilize CPU frequency and JIT.

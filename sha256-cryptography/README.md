@@ -2,6 +2,16 @@
 
 This benchmark measures the throughput of SHA-256 hashing by processing one million unique messages.
 
+## Theoretical Background
+SHA-256 (Secure Hash Algorithm 256-bit) is a cryptographic hash function that belongs to the SHA-2 family. It is built upon the Merkle-Damgård construction, where the input message is padded and split into 512-bit blocks.
+
+The core of the algorithm involves a "compression function" that mixes the current message block with the internal state using bitwise operations (ROT, XOR, AND) and modular addition.
+1.  **Padding**: The message is padded with a `1` bit, followed by zeros, and finally the 64-bit length of the message.
+2.  **Scheduling**: The 512-bit block is expanded into a 64-word message schedule.
+3.  **Compression**: The schedule is mixed into the 8-word state vector over 64 rounds.
+
+This benchmark tests a language's ability to handle unsigned 32-bit integers, bitwise rotations, and strict memory aliasing rules efficiently.
+
 ## Methodology
 *   **Workload**: 1,000,000 hashes.
 *   **Message**: Each hash consists of a base string appended with a 4-byte nonce.

@@ -2,6 +2,15 @@
 
 A high-contention multi-producer multi-consumer (MPMC) queue benchmark using Dmitry Vyukov's bounded lock-free algorithm.
 
+## Theoretical Background
+In multi-threaded programming, passing data between threads safely typically requires a `Mutex` (lock) to prevent race conditions. However, locks can cause performance bottlenecks due to thread sleeping and waking (context switches).
+
+**Lock-Free** programming uses atomic hardware instructions (like CAS or atomic increments) to manage shared data without ever putting a thread to sleep.
+*   **Bounded MPMC Queue**: A fixed-size ring buffer where multiple producers and multiple consumers operate simultaneously.
+*   **The Challenge**: The main difficulty is avoiding "false sharing"—where independent atomic counters (like `head` and `tail`) sit on the same CPU cache line. If one core writes to `head`, the cache line is invalidated for the core trying to read `tail`, causing massive slowdowns ("cache line bouncing").
+
+This benchmark tests the language's memory model (atomics) and its ability to control memory layout (padding/alignment) to prevent cache thrashing.
+
 ## Methodology
 *   **Contention**: 4 producers and 4 consumers simultaneously access a single queue.
 *   **Workload**: 4,000,000 total operations.

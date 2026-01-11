@@ -2,6 +2,15 @@
 
 This benchmark measures the throughput of inter-process communication (IPC) using standard OS kernel pipes.
 
+## Theoretical Background
+Inter-Process Communication (IPC) is the mechanism that allows different processes to manage shared data. A "pipe" is one of the oldest and most fundamental IPC mechanisms in Unix-like operating systems.
+
+A pipe creates a unidirectional data channel that acts as a FIFO (First-In, First-Out) buffer managed by the operating system kernel.
+1.  **Producer**: Writes data into the pipe. If the buffer is full, the writing process blocks (sleeps) until space is available.
+2.  **Consumer**: Reads data from the pipe. If the buffer is empty, the reading process blocks until data is available.
+
+This benchmark measures the overhead of context switching (switching the CPU between processes) and the efficiency of the OS syscall interface (`write` and `read`). It is a test of the language runtime's overhead on top of raw system calls.
+
 ## Methodology
 *   **Workload**: 10 GB of data is streamed from a parent process to a child process.
 *   **Buffer Size**: 64 KB buffers are used for all `read/write` calls.

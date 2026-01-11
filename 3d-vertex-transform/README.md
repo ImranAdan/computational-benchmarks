@@ -2,6 +2,16 @@
 
 This benchmark simulates a "live" 3D graphics pipeline stage, transforming 250,000 vertices per frame for 100 frames.
 
+## Theoretical Background
+In 3D computer graphics, converting a 3D model into a 2D image for the screen involves a series of coordinate transformations, often called the "Vertex Processing" stage.
+
+1.  **World/View Transform**: Points in 3D space $(x, y, z)$ are rotated and translated relative to the camera. This is typically a Matrix $\times$ Vector multiplication.
+2.  **Projection**: To simulate perspective (where objects further away appear smaller), we divide the $x$ and $y$ coordinates by their depth $z$.
+
+$$x_{screen} = \frac{x_{view} \cdot scale}{z_{view} + distance}$$
+
+This workload relies heavily on trigonometric functions ($\sin, \cos$) for rotation and division for projection. It stresses the CPU's Floating-Point Unit (FPU) and the compiler's ability to auto-vectorize Struct-of-Arrays (SoA) or Array-of-Structures (AoS) data layouts.
+
 ## Methodology
 *   **Workload**: 25,000,000 total vertex transformations.
 *   **Operations**: Rotation matrix multiplication followed by perspective projection (division).
