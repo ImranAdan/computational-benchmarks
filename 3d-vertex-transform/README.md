@@ -21,6 +21,16 @@ This benchmark simulates a "live" 3D graphics pipeline stage, transforming 250,0
 *   **Object Overhead**: The largest performance gap is observed here. Even though the vertex array is allocated beforehand, the overhead of accessing individual `Point3D` objects (pointer chasing) compared to raw memory pointers in C is significant.
 *   **No SIMD**: While modern JVMs have "Auto-Vectorization," it is often less consistent than native compilers for complex 3D math.
 
+### Zig
+*   **Performance**: Slower than C/C++ but faster than Java.
+*   **Math**: Uses built-in `@sin`/`@cos` functions. The performance gap vs C suggests that LLVM's auto-vectorization for Zig's math builtins is less aggressive than Clang's handling of `libm` calls in C.
+*   **Layout**: Uses standard Array-of-Structures (AoS) layout (`[]Point3D`).
+
+### Fortran
+*   **Performance**: Slower than C/C++.
+*   **Layout**: Uses a derived type (`type(Point3D)`), which is equivalent to AoS.
+*   **Math**: Uses standard Fortran intrinsics (`sin`, `cos`). Similar to Zig, it appears less aggressively vectorized for this specific trigonometric workload compared to C.
+
 ## Verification
 *   **Checksum**: The sum of all projected X/Y coordinates must match exactly.
 *   **Status**: PASSED.

@@ -22,6 +22,11 @@ A high-contention multi-producer multi-consumer (MPMC) queue benchmark using Dmi
 *   **Padding**: Since Java lacks `Alignas`, we use manual field padding (class hierarchy with dummy `long` fields) to isolate the `AtomicLong` counters.
 *   **Performance**: Competitive but slightly slower due to the overhead of `AtomicLong` object access vs native volatile memory access.
 
+### Zig
+*   **Atomic Primitives**: Uses `std.atomic.Value` for thread-safe counters.
+*   **Padding**: Manual padding struct wrappers are used to ensure 64-byte alignment, matching the C/Rust strategy.
+*   **Performance**: Falls between C++ and Java. It manages contention better than Java but trails the raw pointer efficiency of C.
+
 ## Verification
 *   **Checksum**: The sum of all dequeued values must match the expected sequence total.
 *   **Status**: PASSED.

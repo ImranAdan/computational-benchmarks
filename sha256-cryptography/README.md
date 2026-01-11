@@ -19,6 +19,16 @@ This benchmark measures the throughput of SHA-256 hashing by processing one mill
 ### Java
 *   **Competitive**: Java performs remarkably well in bitwise-heavy workloads. The JIT (C2 compiler) is excellent at identifying the repetitive nature of the SHA-256 block transformation and generating tight machine code.
 
+### Zig
+*   **Winner**: Zig demonstrates superior throughput for this bitwise-heavy workload.
+*   **Implementation**: A manual "clean-room" implementation (no `std.crypto`) using a `Sha256Ctx` struct.
+*   **Optimization**: The Zig compiler (LLVM backend) with `ReleaseFast` effectively optimizes the manual bitwise rotation and addition chains, slightly outperforming the C/C++ Clang builds.
+
+### Fortran
+*   **Performance**: surprisingly competitive, matching Rust and Zig.
+*   **Implementation**: A manual implementation of the SHA-256 algorithm.
+*   **Bitwise Operations**: Modern Fortran (2008+) provides efficient intrinsic bitwise functions (`ieor`, `iand`, `ishft`, `ibits`) which map directly to hardware instructions.
+
 ## Verification
 *   **Checksum**: The final hash of the 1,000,000th nonce must match the baseline (`0c8b1d...`).
 *   **Status**: PASSED.

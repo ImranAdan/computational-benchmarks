@@ -22,6 +22,11 @@ This benchmark measures the throughput of inter-process communication (IPC) usin
 *   **IPC Abstraction**: Java uses `ProcessBuilder`, which is several layers removed from raw POSIX pipes.
 *   **Throughput Gap**: The overhead of Java's `OutputStream` and `InputStream` (including additional internal buffering and synchronization) results in significantly lower throughput compared to native implementations.
 
+### Zig
+*   **Performance**: Faster than Java but trails C/C++ and Rust.
+*   **Implementation**: Uses `std.os.pipe` and `fork`.
+*   **Overhead**: While Zig provides low-level control, its standard library I/O wrappers may introduce slight overhead compared to raw syscalls in C, or the buffer management in the loop differs slightly in instruction cache efficiency.
+
 ## Verification
 *   **Checksum**: The child's XOR checksum must match the parent's data pattern.
 *   **Status**: PASSED.

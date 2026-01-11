@@ -21,6 +21,16 @@ This benchmark renders a $4000 \times 4000$ image of the Mandelbrot set set frac
 *   **Surprise Performance**: Java's `IntStream.range().parallel()` is very competitive here.
 *   **Parallel Streams**: The JVM's ForkJoinPool manages the workload efficiently. On some ARM architectures, Java beats the C/C++ OpenMP implementations due to more modern load-balancing in its stream library.
 
+### Zig
+*   **Implementation**: Uses manual thread management via `std.Thread` and an atomic counter for row distribution.
+*   **Warm-up**: Explicitly runs a 10% warm-up phase to match the methodology of other languages.
+*   **Performance**: Highly competitive, effectively matching C/C++ performance profiles with `ReleaseFast`.
+
+### Fortran
+*   **Winner**: Fortran takes the lead in this specific benchmark on ARM.
+*   **Parallelism**: Uses OpenMP directives (`!$omp parallel do schedule(dynamic, 1)`), ensuring an identical scheduling strategy to the C baseline.
+*   **Math**: The GCC Fortran backend (`gfortran`) generates exceptionally efficient code for the core complex number arithmetic loop.
+
 ## Verification
 *   **Visual**: A `.ppm` image is generated and compared.
 *   **Checksum**: Pixel-sum verification ensured.
